@@ -1,0 +1,27 @@
+.hr{
+    border-width: 4px;
+    border-color: black;
+}
+
+.align{
+    justify-content: space-around;
+    text-align: center;
+    font-size: 20px;
+}
+
+.align-left{
+    text-align: left;
+}
+
+.align-right{
+    text-align: right;
+}
+
+.move-content-y {
+    padding-top: 10%;
+}
+
+.image{
+    width: 35px;
+    height: 35px;
+}
