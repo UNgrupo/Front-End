@@ -4,17 +4,28 @@
 
 .custom-button{
   width: 50%;
-  background-color: #e0dfee;
-  border-radius: 8px;
+  
   text-align: center;
   font-size: 30px;
   font-weight : bold;
+  font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif; /*Revisar esta*/
+  
+  border-radius: 8px;
   border-style: groove;
   border-width: 3px;
+  
+  background: #C9D6FF;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top, #E2E2E2, #C9D6FF);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to top, #E2E2E2, #C9D6FF); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .custom-button:hover{
   box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.16);
+  
+}
+
+.content{
+  padding: 1% 13%;
 }
 
 .move-to-right{
@@ -22,37 +33,35 @@
 }
 
 .text-intro{
-  font-size: 30px;
-  text-align: center;
   padding: 5%;
+  align-self: center;
+  
+  font-size: 30px;
   font-weight : bold;
   font-style: italic;
   font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif; /*Revisar esta*/
-  background-color: black;
-  color: lightgrey;
+  color: #D5D5D5;
+  
   border-radius: 25px;
+  
+  background: #232526;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #414345, #232526, #414345);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #414345, #232526, #414345); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
-.content{
-  padding: 0px 10%;
-}
-
-body{
-  background-color: lightgrey;
-  /*background-image: url("../resources/pregunta-landing.png");
-  background-repeat: no-repeat;
-  background-size: 50% 50%;
-  background-position: center center;*/
-}
-
-h1.deepshadow {
+.title {
   font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
   font-size: 92px;
-  padding: 100px 50px;
+  color: #D5D5D5;
+  
   text-align: center;
   text-transform: uppercase;
   text-rendering: optimizeLegibility;
-  color: #e0dfee;
+  
+  padding: 100px 50px;
+}
+
+.deepshadow {
   letter-spacing: .1em;
   text-shadow: 
     0 -1px 0 #fff, 

@@ -9,16 +9,16 @@
     font-size: 20px;
 }
 
+.address-text{
+    font-size: 15px;
+}
+
 .align-left{
     text-align: left;
 }
 
 .align-right{
     text-align: right;
-}
-
-.move-content-y {
-    padding-top: 10%;
 }
 
 .image{
