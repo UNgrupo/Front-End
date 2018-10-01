@@ -9,6 +9,8 @@ import {BrowserRouter, Route} from 'react-router-dom'
 import App from './components/App';
 import Log_in from './components/Log_in';
 import Sign_up from './components/Sign_up';
+
+/*
 import Home from './components/Home';
 import Profile from './components/Profile';
 import Settings_profile from './components/Settings_profile';
@@ -17,6 +19,7 @@ import Stadistics from './components/Stadistics';
 import Questions from './components/Questions';
 import New_question from './components/New_question';
 import Profile_questioner from './components/Profile_questioner';
+*/
 
 ReactDOM.render(
     <BrowserRouter>

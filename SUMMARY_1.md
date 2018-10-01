@@ -1,4 +1,4 @@
--> Mockups. -- Camilo Esteban Nieto Barrera y Raul...
+-> Mockups. -- Camilo Esteban Nieto Barrera
 
 -> Commit en el repositorio de Front end con su respectiva estructuración. -- Samael
 
@@ -6,6 +6,6 @@
 
 -> Landing page. -- Camilo Esteban Nieto Barrera
 
--> Vistas de registro con sus respectivos estilos. -- Raul
+-> Vistas de registro con sus respectivos estilos. -- Camilo Esteban Nieto Barrera
 
--> Rutas de la aplicación con sus respectivos componentes. -- Camilo Esteban Nieto Barrera y Raul
+-> Rutas de la aplicación con sus respectivos componentes. -- Camilo Esteban Nieto Barrera

@@ -11,7 +11,7 @@ class Footer extends Component {
   render() {
     return (
       <footer>
-        <hr class="hr"/>
+        <hr className="hr"/>
         <div className="row align">
           <div className="col align-right align-self-center">
               <p>&copy; 2018 proyecto UNGRUPO</p>
