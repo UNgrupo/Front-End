@@ -1,0 +1,23 @@
+.container-form-pad {
+    padding: 10% 25%;
+}
+
+.container-form-2{
+    font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
+    
+    border-color: grey;
+    border-width: 7px;
+    border-style: groove;
+    border-radius: 15px;
+}
+
+.container-form {
+    font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
+    
+    text-align: center;
+    
+    border-color: grey;
+    border-width: 7px;
+    border-style: groove;
+    border-radius: 15px;
+}
