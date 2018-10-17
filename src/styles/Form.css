@@ -21,3 +21,8 @@
     border-style: groove;
     border-radius: 15px;
 }
+
+.error{
+   border: 1px solid red;
+   color: red;
+}

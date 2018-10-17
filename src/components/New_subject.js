@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
-
-import axios from 'axios';
+import api_route from '../route';
 
 import '../styles/Form.css';
 import '../styles/Titles.css';
@@ -11,11 +12,6 @@ class New_subject extends Component{
     
     constructor(props){
         super(props);
-        this.state = {
-            name: "",
-            descriptio: "",
-            number_of_topics: 0
-        }
         
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -25,9 +21,17 @@ class New_subject extends Component{
         
         const name = document.getElementById('_name').value;
         
-        axios.post("https://back-end-project-caenietoba.c9users.io/subjects", {name, number_of_topics: this.state.number_of_topics})
+        const data = {
+            name,
+            number_of_topics: 0
+        };
+        
+        axios.post(api_route + "subjects", data)
         .then(response => {
-            window.location.href = "/subjects";
+            window.location.href = "/home";
+        })
+        .catch(error => {
+          alert(error.message, error.response);
         });
         
     }

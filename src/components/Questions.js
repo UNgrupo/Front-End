@@ -3,19 +3,18 @@ import axios from 'axios';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
+import api_route from '../route';
 
-import '../styles/Questions.css'
+import '../styles/Questions.css';
 
 class Questions extends Component {
   
   constructor(props){
-    super(props)
+    super(props);
     this.state = {
       questions: [],
       users: []
-    }
-    
-    this.getUser = this.getUser.bind(this);
+    };
     
   }
   
@@ -23,28 +22,23 @@ class Questions extends Component {
     
     const {topic_id} = this.props.match.params;
     
-    axios.get('https://back-end-project-caenietoba.c9users.io/questions')
+    await axios.get(api_route + 'questions')
     .then(response => {
       let questions = [];
-      for(let i=0; i<response.data.length; i++){
-        if(response.data[i].topic_id == topic_id){
-          questions.push(response.data[i]);
+      const resQuestions = response.data.data;
+      for(let i=0; i<resQuestions.length; i++){
+        if(resQuestions[i].attributes['topic-id'] == topic_id){
+          questions.push(resQuestions[i]);
         }
       }
-      axios.get('https://back-end-project-caenietoba.c9users.io/users')
+      axios.get(api_route + 'users')
       .then(res => {
         this.setState({
-          users: res.data,
+          users: res.data.data,
           questions
         });
       });
     });
-  }
-  
-  async getUser(id){ /*tratando de acceder a la promesa*/
-    const user = await axios.get('https://back-end-project-caenietoba.c9users.io/users/'+id)
-    console.log(typeof(user.data.name))
-    return await user.data.name
   }
   
   render() {
@@ -55,15 +49,15 @@ class Questions extends Component {
         <div className="panel border-panel">
           <div className="panel-body px-5 py-3">
             <a href={"/questions/"+this.props.match.params.topic_id+'/'+question.id} className="no-decoration-a">
-              <h4>{question.title}</h4>
+              <h4>{question.attributes.title}</h4>
+              <h4>Hola</h4>
             </a>
             <div className="row">
               <div className="col">
-                {/*this.getUser(question.user_id)*/} {/*tratando de acceder a la promesa*/}
-                <a href='#'>{this.state.users[question.user_id-1].name}</a>
+                <a href='#'>{this.state.users[question.attributes['user-id']-1].attributes.name}</a>
               </div>
               <div className="col">
-                {question.date}
+                {question.attributes.date}
               </div>
             </div>
           </div>

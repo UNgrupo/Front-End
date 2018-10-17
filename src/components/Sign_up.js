@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Footer from './Footer.js';
-import '../styles/Log_in-Sign_up.css';
 
+import Footer from './Footer.js';
 import {testPassword} from '../scripts/testPassword.js';
+import api_route from '../route';
+
+import '../styles/Log_in-Sign_up.css';
 
 class Sign_up extends Component {
   
   constructor(props){
         super(props);
         this.state = {
-          name: '',
-          email: '',
-          password: '',
-          securityPassword: 'None',
+          securityPassword: 'None'
         };
         
         this.handlePassword = this.handlePassword.bind(this);
@@ -25,15 +24,15 @@ class Sign_up extends Component {
     
     e.preventDefault()
     
-    var name = document.getElementById('name').value;
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value;
   
-    axios.get('https://back-end-project-caenietoba.c9users.io/users')
+    axios.get(api_route + 'users')
     .then( (response) => {
       let index=false;
-      for(let i=0; i<response.data.length; i++)
-        if(response.data[i].name === email){
+      const resUsers = response.data.data;
+      for(let i=0; i<resUsers.length; i++)
+        if(resUsers[i].attributes.name === email){
           index = true;
           break;
         }
@@ -41,7 +40,7 @@ class Sign_up extends Component {
         if(index)
           alert("El usuario ya existe.")
         else{
-          axios.post('https://back-end-project-caenietoba.c9users.io/users', {
+          axios.post(api_route + 'users', {
             name: email, 
             password, 
             level: 708, 

@@ -1,43 +1,48 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
+import api_route from '../route';
 
 class New_topic extends Component{
     
     constructor(props){
         super(props);
         this.state = {
-            questions_number: 0,
-            subject: 0
-        }
+            subject: {attributes: {name: ""}}
+        };
         
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     
     componentDidMount(){
         const { subject_id } = this.props.match.params;
-        axios.get('https://back-end-project-caenietoba.c9users.io/subjects/' + subject_id)
+        
+        axios.get(api_route + 'subjects/' + subject_id)
         .then(response => {
             this.setState({
-                subject: response.data
+                subject: response.data.data
             });
+        })
+        .catch(error => {
+          alert(error.message, error.response);
         });
     }
     
-    handleSubmit(e){
-        e.preventDefault;
+    async handleSubmit(e){
+        e.preventDefault();
         
         const name = document.getElementById('_name').value;
         
         const new_topic = {
             name,
             subject_id: this.state.subject.id
-        }
+        };
         
-        axios.post('https://back-end-project-caenietoba.c9users.io/topics', new_topic)
+        await axios.post(api_route + 'topics', new_topic)
         .then(response => {
-            alert("Topic added")
+            alert("Topic added");
             window.location.href = "/topics/" + this.state.subject.id;
         });
         
@@ -54,7 +59,7 @@ class New_topic extends Component{
                     <div className="container-form-pad ">
                         <div className="container-form-2">
                             <div className="panel-heading my-3 text-center">
-                                <h1 className="title-l">New Topic of {this.state.subject.name} </h1>
+                                <h1 className="title-l">New Topic of {this.state.subject.attributes.name} </h1>
                             </div>
                             <div className="panel-body px-5">
                                 <form onSubmit={ this.handleSubmit } className="pt-3">

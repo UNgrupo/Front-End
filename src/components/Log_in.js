@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Footer from './Footer.js';
-//import Home from './Home.js';
-
-//import {BrowserRouter, Route, Redirect, Link} from 'react-router-dom'
+import api_route from '../route';
 
 import '../styles/Log_in-Sign_up.css';
 
@@ -28,22 +26,22 @@ class Log_in extends Component {
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value;
     
-    axios.get('https://back-end-project-caenietoba.c9users.io/users')
-    .then((response) => {
-      var user = null;
-      for(let i=0; i<response.data.length; i++)
-        if( response.data[i].name === email ){
-          user = response.data[i];
-          break;
+    axios.get(api_route + 'users')
+    .then(response => {
+        let users = response.data.data;
+        for(let i=0; i<users.length; i++){
+          if(users[i].attributes.usern === email){
+            if(users[i].attributes.password === password){
+              window.location.href = "/home"; 
+            }else{
+              alert("The user doesnt exist or the password doesnt match")
+            }
+            break;
+          }
         }
-      
-      console.log(user)
-      
-      if(user === null || user.password !== password){
-        alert("The user doesnt exist or the password doesnt match")
-      }else{
-        window.location.href = "/home"; 
-      }
+    })
+    .catch(error => {
+      alert(error.message);
     });
   }
   
@@ -57,7 +55,7 @@ class Log_in extends Component {
             <h1 className="display-3 title-l">Log in</h1>
             <form onSubmit={this.handleSubmit}>
               <div className="form-left">
-                <div className="form-group pt-2">
+                <div className="form-group">
                   <label htmlFor="email">Email (*):</label>
                   {/*<input type="email" placeholder="example@unal.edu.co" className="form-control" id="email" required/>*/}
                   <input type="text" placeholder="example@unal.edu.co" className="form-control" id="email" name="email" />

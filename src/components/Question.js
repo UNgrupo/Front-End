@@ -3,6 +3,8 @@ import axios from 'axios';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
+import api_route from '../route';
+import {order_qualification, order_date} from '../scripts/orderData';
 
 import '../styles/Question.css';
 import Thumb_up from '../resources/thumb-up.jpg';
@@ -13,8 +15,8 @@ class Question extends Component{
     constructor(props){
         super(props);
         this.state = {
-            question: "",
-            user_question: "",
+            question: {attributes: {}},
+            user_question: {attributes: {name: ''}},
             users: [],
             answers: [], 
             comments: []
@@ -30,17 +32,17 @@ class Question extends Component{
     }
     
     order_qualification(a, b){
-        if (a.qualification < b.qualification)
+        if (a.attributes.qualification < b.attributes.qualification)
             return 1;
-        if (a.qualification > b.qualification)
+        if (a.attributes.qualification > b.attributes.qualification)
             return -1;           
         return 0;
     }
     
     order_date(a, b){
-        if (a.date < b.date)
+        if (a.attributes.date < b.attributes.date)
             return 1;
-        if (a.date > b.date)
+        if (a.attributes.date > b.attributes.date)
             return -1;           
         return 0;
     }
@@ -48,40 +50,42 @@ class Question extends Component{
     async componentDidMount(){
           const {question_id} = this.props.match.params;
           
-          await axios.get('https://back-end-project-caenietoba.c9users.io/questions/' + question_id)
+          await axios.get(api_route + 'questions/' + question_id)
           .then(response => {
               this.setState({
-                  question: response.data
+                  question: response.data.data
               });
           })
           .catch(error => {
               alert(error.message);
           });
           
-          await axios.get('https://back-end-project-caenietoba.c9users.io/users/' + this.state.question.user_id)
+          await axios.get(api_route + 'users/' + this.state.question.attributes['user-id'])
           .then(response => {
               this.setState({
-                  user_question: response.data
+                  user_question: response.data.data
               });
           });
           
-          await axios.get('https://back-end-project-caenietoba.c9users.io/users')
+          await axios.get(api_route + 'users')
           .then(response => {
               this.setState({
-                  users: response.data
+                  users: response.data.data
               });
           })
           .catch(error => {
               alert(error.message);
           });
           
-          await axios.get('https://back-end-project-caenietoba.c9users.io/answers')
+          await axios.get(api_route + 'answers')
           .then(response => {
               let answers = [];
-              for(let i=0; i<response.data.length; i++){
-                  if(response.data[i].question_id == question_id)
-                    answers.push(response.data[i]);
+              const resAnswers = response.data.data;
+              for(let i=0; i<resAnswers.length; i++){
+                  if(resAnswers[i].attributes['question-id'] == question_id)
+                    answers.push(resAnswers[i]);
               }
+              //answers.sort(order_qualification);
               answers.sort(this.order_qualification);
               this.setState({
                   answers
@@ -91,19 +95,21 @@ class Question extends Component{
               alert(error.message);
           });
           
-          await axios.get('https://back-end-project-caenietoba.c9users.io/comments')
+          await axios.get(api_route + 'comments')
           .then(response => {
               let comments = [];
+              const resComments = response.data.data;
               
               for(let i=0; i<this.state.answers.length; i++){
                   let comments_i = [];
-                  for(let j=0; j<response.data.length; j++){
-                      if(this.state.answers[i].id == response.data[j].answer_id){
-                          comments_i.push(response.data[j]);
+                  for(let j=0; j<resComments.length; j++){
+                      if(this.state.answers[i].id == resComments[j].attributes['answer-id']){
+                          comments_i.push(resComments[j]);
                       }
                   }
                   comments.push(comments_i);
               }
+              //comments.sort(order_date);
               comments.sort(this.order_date);
               this.setState({
                   comments
@@ -115,10 +121,13 @@ class Question extends Component{
     }
     
     handleClick(answer, number){ //IMPORTANTE Revisar como reenderizar el componente
-        const ans = answer.target.value.split(',')
-        axios.put('https://back-end-project-caenietoba.c9users.io/answers/'+ans[0], {qualification: parseInt(ans[1]) + number})
+        const ans = answer.target.value.split(',');
+        const data = {
+            qualification: parseInt(ans[1], 10) + number
+        }
+        axios.put(api_route + 'answers/' + ans[0], data)
         .then(response => {
-            this.forceUpdate()
+            this.forceUpdate();
             this.setState();
         })
         .catch(error => {
@@ -143,7 +152,7 @@ class Question extends Component{
             answer_id: e.target.elements._answer_id.value
         };
         
-        axios.post('https://back-end-project-caenietoba.c9users.io/comments', data)
+        axios.post(api_route + 'comments', data)
         .then(response => {
             alert("Comment Added");
         })
@@ -164,7 +173,7 @@ class Question extends Component{
             question_id: this.props.match.params.question_id
         }
         
-        axios.post('https://back-end-project-caenietoba.c9users.io/answers', data)
+        axios.post(api_route + 'answers', data)
         .then(response => {
             alert("Answer Added");
         })
@@ -184,12 +193,12 @@ class Question extends Component{
                 this.state.comments[i].map(comment => {
                     return(
                         <div key={comment.id} className="media p-3 container-form-comment mb-1 mt-1"> 
-                            <img src={this.state.users[comment.user_id-1].photo} alt={this.state.users[comment.user_id-1].name} className="mr-3 mt-3 rounded-circle" />
+                            <img src={this.state.users[comment.attributes['user-id']-1].attributes.photo} alt={this.state.users[comment.attributes['user-id']-1].attributes.name} className="mr-3 mt-3 rounded-circle" />
                             <div className="media-body">
-                                <h4>{this.state.users[comment.user_id-1].name + "    "}      
-                                    <small><i>{comment.date}</i></small>
+                                <h4>{this.state.users[comment.attributes['user-id']-1].attributes.name + "    "}      
+                                    <small><i>{comment.attributes.date}</i></small>
                                 </h4>
-                                <p>{comment.description}</p>
+                                <p>{comment.attributes.description}</p>
                             </div>
                         </div>
                     );
@@ -200,16 +209,16 @@ class Question extends Component{
         const answers = this.state.answers.map((answer,i) => {
             return(
                 <div key={answer.id} className="media p-3 container-form-2"> 
-                    <img src={this.state.users[answer.user_id-1].photo} alt={this.state.users[answer.user_id-1].name} className="mr-3 mt-3 rounded-circle" />
+                    <img src={this.state.users[answer.attributes['user-id']-1].attributes.photo} alt={this.state.users[answer.attributes['user-id']-1].attributes.name} className="mr-3 mt-3 rounded-circle" />
                     <div className="media-body">
-                        <h4>{this.state.users[answer.user_id-1].name + "    "}      
-                            <small><i>{answer.date}</i></small>
+                        <h4>{this.state.users[answer.attributes['user-id']-1].attributes.name + "    "}      
+                            <small><i>{answer.attributes.date}</i></small>
                         </h4>
-                        <p>{answer.description}</p>
+                        <p>{answer.attributes.description}</p>
                         <div className="row txt-r">
-                            <p className="pr-2">Qualification: {answer.qualification}</p>
-                            <input type="image" src={Thumb_up} className="image-like" value={[answer.id, answer.qualification]} onClick={this.handleClickUp} />
-                            <input type="image" src={Thumb_down} className="image-like" value={[answer.id, answer.qualification]} onClick={this.handleClickDown} />
+                            <p className="pr-2">Qualification: {answer.attributes.qualification}</p>
+                            <input type="image" alt="Thumb up" src={Thumb_up} className="image-like" value={[answer.id, answer.attributes.qualification]} onClick={this.handleClickUp} />
+                            <input type="image" alt="Thumb down" src={Thumb_down} className="image-like" value={[answer.id, answer.attributes.qualification]} onClick={this.handleClickDown} />
                         </div>
                         <form onSubmit={this.handleSubmitComment}>
                             <div className="form-group shadow-textarea">
@@ -234,15 +243,15 @@ class Question extends Component{
                 
                 <div className="container">
                     <div className="px-5 mx-5">
-                        <h2 className="text-center my-5">{this.state.question.title}</h2>
+                        <h2 className="text-center my-5">{this.state.question.attributes.title}</h2>
                         
                         <div className="media p-3 container-form-comment mb-1 mt-1"> 
-                            <img src={this.state.user_question.photo} alt={this.state.user_question.name} className="mr-3 mt-3 rounded-circle" />
+                            <img src={this.state.user_question.attributes.photo} alt={this.state.user_question.attributes.name} className="mr-3 mt-3 rounded-circle" />
                             <div className="media-body">
-                                <h4>{this.state.user_question.name + "    "}      
-                                    <small><i>{this.state.question.date}</i></small>
+                                <h4>{this.state.user_question.attributes.name + "    "}      
+                                    <small><i>{this.state.question.attributes.date}</i></small>
                                 </h4>
-                                <p>{this.state.question.description}</p>
+                                <p>{this.state.question.attributes.description}</p>
                             </div>
                         </div>
                         

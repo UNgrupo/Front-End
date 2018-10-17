@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import Footer from './Footer.js';
 import Navbar from './Navbar.js';
+import api_route from '../route';
 
 class New_question extends Component {
   
@@ -10,7 +11,7 @@ class New_question extends Component {
     super(props);
     this.state = {
       topic: ""
-    }
+    };
     
     this.handleSubmit = this.handleSubmit.bind(this);
     
@@ -18,13 +19,16 @@ class New_question extends Component {
   
   componentDidMount(){
     
-    const {topic_id} = this.props.match.params
+    const {topic_id} = this.props.match.params;
     
-    axios.get('https://back-end-project-caenietoba.c9users.io/topics/' + topic_id)
+    axios.get(api_route + 'topics/' + topic_id)
     .then(response => {
       this.setState({
-        topic: response.data
+        topic: response.data.data
       });
+    })
+    .catch(error => {
+      alert(error.message);
     });
     
   }
@@ -41,7 +45,7 @@ class New_question extends Component {
       topic_id: this.state.topic.id
     };
     
-    axios.post('https://back-end-project-caenietoba.c9users.io/questions', data)
+    axios.post(api_route + 'questions', data)
     .then(response => {
       alert("Question added.");
       window.location.href = "/questions/" + this.state.topic.id;

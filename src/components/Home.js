@@ -1,32 +1,25 @@
 import React, { Component } from 'react';
-import axios from 'axios'
+import axios from 'axios';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
 import Card from './Card.js';
+import api_route from '../route';
 
 class Home extends Component {
   
   constructor(props){
     super(props);
     this.state = {
-      subjects: [],
+      subjects: []
     };
-    
-    this.handleClick = this.handleClick.bind(this);
-  }
-  
-  handleClick(e){
-    this.setState({
-      redirect: true
-    });
   }
   
   componentDidMount(){
-    axios.get('https://back-end-project-caenietoba.c9users.io/subjects')
+    axios.get(api_route + 'subjects')
     .then((response) => {
       this.setState({
-        subjects: response.data
+        subjects: response.data.data
       });
     });
   }
@@ -34,8 +27,9 @@ class Home extends Component {
   render() {
     
     const subjects = this.state.subjects.map((subject, i) => {
+      const sub = subject.attributes;
       return (
-        <Card title={subject.name} description={"The subject has " + subject.number_of_topics + " topics"} route={"/topics/" + subject.id} />
+        <Card key={i} title={sub.name} description={"The subject has " + sub['number-of-topics'] + " topics"} route={"/topics/" + subject.id} />
       );
     });
     
@@ -44,7 +38,7 @@ class Home extends Component {
           <Navbar />
           
           <div className="mb-5">
-            <div classname="panel panel-info">
+            <div className="panel panel-info">
               <div className="panel-heading">
                 <h1 className="text-center my-5">Subjects</h1>
               </div>

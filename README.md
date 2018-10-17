@@ -9,7 +9,8 @@ Navigation: [Website][1] | [BackEnd repository][2] | **BackEnd repository**
 
 # Comandos de modulos usados
 # npm install axios -save
-
+# npm install --save redux
+# npm install --save react-redux
 
 
 # Cosas por hacer del lado del back
