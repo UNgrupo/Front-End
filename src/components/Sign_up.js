@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
-import Footer from './Footer.js'
-import '../styles/Log_in-Sign_up.css';
+import axios from 'axios';
 
+import Footer from './Footer.js';
 import {testPassword} from '../scripts/testPassword.js';
+import api_route from '../route';
+
+import '../styles/Log_in-Sign_up.css';
 
 class Sign_up extends Component {
   
   constructor(props){
         super(props);
         this.state = {
-          name: '',
-          email: '',
-          password: '',
-          securityPassword: 'low',
+          securityPassword: 'None'
         };
         
         this.handlePassword = this.handlePassword.bind(this);
@@ -21,15 +21,42 @@ class Sign_up extends Component {
     }
     
   handleSubmit(e){
-    this.setState({
-        name: e.target.name.value,
-        email: e.target.email.value,
-        password: e.target.password.value
-      })
+    
+    e.preventDefault()
+    
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+  
+    axios.get(api_route + 'users')
+    .then( (response) => {
+      let index=false;
+      const resUsers = response.data.data;
+      for(let i=0; i<resUsers.length; i++)
+        if(resUsers[i].attributes.name === email){
+          index = true;
+          break;
+        }
+        
+        if(index)
+          alert("El usuario ya existe.")
+        else{
+          axios.post(api_route + 'users', {
+            name: email, 
+            password, 
+            level: 708, 
+            reputation: "Bronze III",
+            role: "student", 
+            number_of_followers: 298, 
+            photo: "null"
+          });
+          window.location.href = "/home";
+        }
+      
+    });
   }
   
   handlePassword(e){
-    let {name, value} = e.target
+    let value = e.target.value;
     
     console.log(value)
     
@@ -49,11 +76,12 @@ class Sign_up extends Component {
               <div className="form-left">
                 <div className="form-group pt-2">
                   <label htmlFor="name">Name (*):</label>
-                  <input type="text" placeholder="First and second name" className="form-control" form-control id="name" name="name" required/>
+                  <input type="text" placeholder="First and second name" className="form-control" id="name" name="name" required/>
                 </div>
                 <div className="form-group">
                   <label htmlFor="email">Email (*):</label>
-                  <input type="email" placeholder="example@unal.edu.co" className="form-control" id="email" name="email" required/>
+                  {/*<input type="email" placeholder="example@unal.edu.co" className="form-control" id="email" name="email" required/>*/}
+                  <input type="text" placeholder="example@unal.edu.co" className="form-control" id="email" name="email" />
                 </div>
                 <div className="form-group">
                   <label htmlFor="password">Password (*):</label>
@@ -62,7 +90,7 @@ class Sign_up extends Component {
                 </div>
               </div>
               <div className="pt-4">
-                <input type="submit" value="Sign me up!" className="btn btn-success btn-block active"/>
+                <input type="submit" className="btn btn-success btn-block active" value="Sign me up!" />
               </div>
               <div className="pt-4">
                 <a href="/log_in">Want to log in?</a>

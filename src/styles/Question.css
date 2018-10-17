@@ -1,0 +1,26 @@
+.container-form-comment{
+    font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
+    
+    border-color: grey;
+    border-width: 4px;
+    border-style: groove;
+    border-radius: 15px;
+}
+
+.txt-r{
+    text-align: right !important;
+    justify-content: flex-end !important;
+    padding-right: 20px;
+}
+
+.image-like{
+    width: 25px;
+    height: 25px;
+}
+
+.shadow-textarea textarea.form-control::placeholder {
+    font-weight: 300;
+}
+.shadow-textarea textarea.form-control {
+    padding-left: 0.8rem;
+}
