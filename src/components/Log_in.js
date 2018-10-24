@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
+
 import Footer from './Footer.js';
-import api_route from '../route';
+import userActions from '../_actions/actions-user.js';
 
 import '../styles/Log_in-Sign_up.css';
 
@@ -10,60 +11,72 @@ class Log_in extends Component {
   
   constructor(props){
         super(props);
+        
+        this.props.dispatch(userActions.logout());
+        
         this.state = {
-            email: '',
+            username: '',
             password: '',
-            token: null
+            submitted: false,
+            match: true
         };
         
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
     
-  handleSubmit(e){
+  async componentDidMount(){
+    await this.props.dispatch(userActions.getAll());
+  }
+    
+  async handleSubmit(e){
     
     e.preventDefault();
     
-    var email = document.getElementById('email').value;
-    var password = document.getElementById('password').value;
+    const username = e.target.elements.username.value;
+    const password = e.target.elements.password.value;
+    const { users, dispatch } = this.props;
     
-    axios.get(api_route + 'users')
-    .then(response => {
-        let users = response.data.data;
-        for(let i=0; i<users.length; i++){
-          if(users[i].attributes.usern === email){
-            if(users[i].attributes.password === password){
-              window.location.href = "/home"; 
-            }else{
-              alert("The user doesnt exist or the password doesnt match")
-            }
-            break;
-          }
-        }
-    })
-    .catch(error => {
-      alert(error.message);
+    if (username && password) {
+        await dispatch(userActions.login(users, username, password)); //Users es solo necesario en este momento por que no tengo forma de acceder a la api de otras forma, cambiar tambien en users-actions
+    }
+    
+    this.setState({ 
+      submitted: true,
+      match: false
+    });
+    
+  }
+  
+  handleChange(e){
+    const {name, value} = e.target;
+    this.setState({
+      [name]: value,
+      match: true
     });
   }
   
   render() {
     
+    const {submitted, username, password, match} = this.state;
+    
     return (
       <div className="container">
-        <h1 className="title-initial-forms deepshadow">Proyecto ungrupo</h1>
+        <h1 className="title-proyect deepshadow">Proyecto ungrupo</h1>
         <div className="container-form-pad">
           <div className="container-form p-4">
-            <h1 className="display-3 title-l">Log in</h1>
-            <form onSubmit={this.handleSubmit}>
-              <div className="form-left">
-                <div className="form-group">
-                  <label htmlFor="email">Email (*):</label>
-                  {/*<input type="email" placeholder="example@unal.edu.co" className="form-control" id="email" required/>*/}
-                  <input type="text" placeholder="example@unal.edu.co" className="form-control" id="email" name="email" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="password">Password (*):</label>
-                  <input type="password" name="password" placeholder="password" className="form-control" id="password" required/>
-                </div>
+            <h1 className="display-3 title-form">Log in</h1>
+            <form className="form" onSubmit={this.handleSubmit}>
+              {submitted && !match && <div className='help-block text-center py-2 text-danger'>The user doesnt exist or the password doesnt match</div>}
+              <div className={"form-group" + (submitted && !username ? " has-error" : '')}>
+                <label className="control-label" htmlFor="username">Username (*):</label>
+                <input type="text" className="form-control" placeholder="username" id="username" name="username" value={username} onChange={this.handleChange}/>
+                {submitted && !username && <div className="help-block"><small>Username is required</small></div>}
+              </div>
+              <div className={"form-group" + (submitted && !password ? ' has-error' : '')}>
+                <label htmlFor="password">Password (*):</label>
+                <input type="password" className="form-control" placeholder="password" id="password" name="password" value={password} onChange={this.handleChange}/>
+                {submitted && !password && <div className="help-block"><small>Password is required</small></div>}
               </div>
               <div className="pt-4">
                 <input type="submit" className="btn btn-success btn-block active" value="Log me in!" />
@@ -85,4 +98,11 @@ class Log_in extends Component {
   }
 }
 
-export default Log_in;
+function mapStateToProps(state) {
+    const { users } = state;
+    return {
+        users
+    };
+}
+
+export default connect(mapStateToProps)(Log_in)

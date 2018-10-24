@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter, Route} from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
 
-import {createStore} from 'redux';
+import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
+import thunkMiddleware from 'redux-thunk';
+import { createLogger } from 'redux-logger';
 import allReducers from './_reducers';
 
 import './styles/index.css';
@@ -29,7 +31,17 @@ import Stadistics from './components/Stadistics';
 import Profile_questioner from './components/Profile_questioner';
 */
 
-const store = createStore(allReducers);
+const loggerMiddleware = createLogger();
+
+const store = createStore(
+    allReducers,
+    applyMiddleware(
+        thunkMiddleware,
+        loggerMiddleware
+    )
+);
+
+export default store;
 
 ReactDOM.render(
     <Provider store={store}>

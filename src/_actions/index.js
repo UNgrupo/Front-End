@@ -1,1 +1,1 @@
-import userActions from './actions-user';
+export * from './actions-user';

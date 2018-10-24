@@ -18,3 +18,6 @@ Navigation: [Website][1] | [BackEnd repository][2] | **BackEnd repository**
 #   Mirar lo de cors en back
 #   Agregar email y password a la base de datos de user
 #   Revisar los métodos de traer datos desde el servidor para poder no solo traer por id si no por otros campos
+
+
+# https://www.npmjs.com/package/react-loader-spinner 
