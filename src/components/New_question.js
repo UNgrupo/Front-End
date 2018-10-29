@@ -1,61 +1,80 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 
 import Footer from './Footer.js';
 import Navbar from './Navbar.js';
-import api_route from '../route';
+import topicActions from '../_actions/actions-topic';
+import questionActions from '../_actions/actions-question';
 
 class New_question extends Component {
   
   constructor(props){
     super(props);
     this.state = {
-      topic: ""
+      title: '',
+      description: '',
+      submitted: false
     };
     
     this.handleSubmit = this.handleSubmit.bind(this);
-    
+    this.handleChange = this.handleChange.bind(this);
   }
   
   componentDidMount(){
     
     const {topic_id} = this.props.match.params;
     
-    axios.get(api_route + 'topics/' + topic_id)
-    .then(response => {
-      this.setState({
-        topic: response.data.data
-      });
-    })
-    .catch(error => {
-      alert(error.message);
-    });
-    
+    this.props.dispatch( topicActions.getById( topic_id ) );
   }
   
-  handleSubmit(e){
+  async handleSubmit(e){
     
     e.preventDefault();
     
+    const title = e.target.elements.title.value;
+    const description = e.target.elements.description.value;
+    
     const data = { 
-      title: document.getElementById('_title').value,
-      description: document.getElementById('_description').value,
+      title,
+      description,
       date: (new Date()).toUTCString(),
-      user_id: 1,//hay que cambiar esto para que agregue dependiendo del usuario IMPORTANTISIMO
-      topic_id: this.state.topic.id
+      'user_id': window.localStorage.getItem('user-id'),
+      'topic_id': this.props.topic.id
     };
     
-    axios.post(api_route + 'questions', data)
-    .then(response => {
-      alert("Question added.");
-      window.location.href = "/questions/" + this.state.topic.id;
-    })
-    .catch(error => {
-      alert(error.message, error.response);
+    this.setState({
+      submitted: true
+    });
+    
+    if( title && description )
+      await this.props.dispatch( questionActions.addNew( data ) );
+  }
+  
+  handleChange(e){
+    const {name, value} = e.target;
+    this.setState({
+      [name]: value,
+      submitted: false
     });
   }
   
   render() {
+    
+    console.log( this.props.question );
+    
+    if( this.props.question.success && this.state.submitted ){
+      window.location.href = "/questions/" + this.props.topic.id;
+    }
+    
+    const { title, description, submitted } = this.state;
+    const { success, data } = this.props.question;
+    
+    let titleError = '', descriptionError = '';
+    if( !success && data && data.data ){
+      titleError = data.data.title;
+      descriptionError = data.data.description;
+    }
+    
     return (
         <div>
                 
@@ -65,25 +84,30 @@ class New_question extends Component {
             <div className="container-form-pad ">
               <div className="container-form-2">
                 <div className="panel-heading my-3 text-center">
-                  <h1 className="title-l">New Question of {this.state.topic.name} </h1>
+                  <h1 className="title-l">New Question of {(this.props.topic.attributes ? this.props.topic.attributes.name : '')} </h1>
                 </div>
                 <div className="panel-body px-5">
                   <form onSubmit={ this.handleSubmit } className="pt-3">
-                    <div className="form-group">
-                      <label htmlFor="_title">Title(*):</label>
-                      <input type="text" className="form-control" id="_title" name="_title" required />
+                    { submitted && success && <div className='help-block text-center text-success'><big>{ data.toString() }</big></div> }
+                    <div className={'form-group' + ( submitted && (!title || titleError) ? ' has-error': '')}>
+                      <label htmlFor="title">Title:</label>
+                      <input type="text" className="form-control" id="title" name="title" value={title} onChange={this.handleChange}/>
+                      { submitted && !title && <div className='help-block'><small>Title is required</small></div>}
+                      { submitted && titleError && <div className='help-block'><small>{ titleError }</small></div>}
                     </div>
-                    <div className="form-group">
-                      <label htmlFor="_description">Description:</label>
-                      <input type="text" className="form-control" id="_description" name="_description" />
+                    <div className={'form-group' + ( submitted && (!description || descriptionError) ? ' has-error': '')}>
+                      <label htmlFor="description">Description:</label>
+                      <input type="text" className="form-control" id="description" name="description" value={description} onChange={this.handleChange}/>
+                      { submitted && !description && <div className='help-block'><small>Description is required</small></div>}
+                      { submitted && descriptionError && <div className='help-block'><small>{ titleError }</small></div>}
                     </div>
                     <div className="row pt-3 mb-5">
                       <div className="col">
-                        <input type="submit" className="btn btn-success btn-block active" value="Add me!" />
+                        <input type="submit" className="btn btn-success btn-block active" defaultValue="Add me!" />
                       </div>
                       <div className="col">
-                        <a href={"/questions/"+this.state.topic.id}>
-                          <input className="btn btn-danger btn-block active" value="Go back!" />
+                        <a href={"/questions/"+this.props.topic.id}>
+                          <input className="btn btn-danger btn-block active" defaultValue="Go back!" />
                         </a>
                       </div>
                     </div>
@@ -100,4 +124,12 @@ class New_question extends Component {
   }
 }
 
-export default New_question;
+function mapStateToProps( state ){
+  const { topic, question } = state;
+  return {
+    topic,
+    question
+  };
+}
+
+export default connect(mapStateToProps)(New_question);

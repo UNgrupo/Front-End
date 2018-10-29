@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import '../styles/Navbar.css';
 import Profile from '../resources/Profile.png';
 import Sign_out from '../resources/Sign out.png';

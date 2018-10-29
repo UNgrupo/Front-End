@@ -1,69 +1,48 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
-import api_route from '../route';
+import questionActions from '../_actions/actions-question';
+import userActions from '../_actions/actions-user';
 
 import '../styles/Questions.css';
 
 class Questions extends Component {
   
-  constructor(props){
-    super(props);
-    this.state = {
-      questions: [],
-      users: []
-    };
-    
-  }
-  
   async componentDidMount(){
     
     const {topic_id} = this.props.match.params;
     
-    await axios.get(api_route + 'questions')
-    .then(response => {
-      let questions = [];
-      const resQuestions = response.data.data;
-      for(let i=0; i<resQuestions.length; i++){
-        if(resQuestions[i].attributes['topic-id'] == topic_id){
-          questions.push(resQuestions[i]);
-        }
-      }
-      axios.get(api_route + 'users')
-      .then(res => {
-        this.setState({
-          users: res.data.data,
-          questions
-        });
-      });
-    });
+    await this.props.dispatch( questionActions.getAllByForeanId( topic_id, 'topic') );
+    
+    await this.props.dispatch( userActions.getAll() );
   }
   
   render() {
+    let questions = [];
     
-    const questions = this.state.questions.map((question, i) => {
-      return(
-        
-        <div className="panel border-panel">
-          <div className="panel-body px-5 py-3">
-            <a href={"/questions/"+this.props.match.params.topic_id+'/'+question.id} className="no-decoration-a">
-              <h4>{question.attributes.title}</h4>
-              <h4>Hola</h4>
-            </a>
-            <div className="row">
-              <div className="col">
-                <a href='#'>{this.state.users[question.attributes['user-id']-1].attributes.name}</a>
-              </div>
-              <div className="col">
-                {question.attributes.date}
+    if( !this.props.question.data && !this.props.user.data )
+      questions = this.props.question.map((question, i) => {
+        return (
+          
+          <div key={i} className="panel border-panel">
+            <div className="panel-body px-5 py-3">
+              <a href={"/questions/"+this.props.match.params.topic_id+'/'+question.id} className="no-decoration-a">
+                <h4>{question.attributes.title}</h4>
+              </a>
+              <div className="row">
+                <div className="col">
+                  <a href='#'>{this.props.user[question.attributes['user-id']-1].attributes.name}</a>
+                </div>
+                <div className="col">
+                  {question.attributes.date}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      );
-    });
+        );
+      });
     
     return (
       <div>
@@ -89,4 +68,12 @@ class Questions extends Component {
   }
 }
 
-export default Questions;
+function mapStateToProps( state ){
+  const { question, user } = state;
+  return {
+    question, 
+    user
+  };
+}
+
+export default connect(mapStateToProps)(Questions);

@@ -1,20 +1,40 @@
-export default {
-    order_qualification,
-    order_date
+const sortAlgorithms = {
+    orderQualificationGreater,
+    orderQualificationLess,
+    orderDateGreater,
+    orderDateLess
+};
+
+export default sortAlgorithms;
+
+function orderQualificationGreater(a, b){
+    if (a.attributes.qualification < b.attributes.qualification)
+        return 1;
+    if (a.attributes.qualification > b.attributes.qualification)
+        return -1;           
+    return 0;
 }
 
-export function order_qualification(a, b){
-    if (a.qualification < b.qualification)
+function orderQualificationLess(a, b){
+    if (a.attributes.qualification > b.attributes.qualification)
         return 1;
-    if (a.qualification > b.qualification)
+    if (a.attributes.qualification < b.attributes.qualification)
         return -1;           
     return 0;
 }
     
-export function order_date(a, b){
-    if (a.date < b.date)
+function orderDateGreater(a, b){
+    if (a.attributes.date < b.attributes.date)
         return 1;
-    if (a.date > b.date)
+    if (a.attributes.date > b.attributes.date)
+        return -1;           
+    return 0;
+}
+    
+function orderDateLess(a, b){
+    if (a.attributes.date > b.attributes.date)
+        return 1;
+    if (a.attributes.date < b.attributes.date)
         return -1;           
     return 0;
 }

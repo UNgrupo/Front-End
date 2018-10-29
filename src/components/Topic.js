@@ -1,52 +1,28 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
 import Card from './Card.js';
-import api_route from '../route';
+import topicActions from '../_actions/actions-topic';
+import subjectActions from '../_actions/actions-subject';
 
 class Topic extends Component{
     
-    constructor(props){
-        super(props);
-        this.state = {
-            topics: [],
-            subject: {attributes: {name: ""}}
-        };
-    }
-    
-    componentDidMount(){
+    async componentDidMount(){
         
         const { subject_id } = this.props.match.params;
         
-        axios.get(api_route + "topics")
-        .then(response => {
-            const resTopics = response.data.data;
-            let topics_subject = [];
-            for(let i=0; i<resTopics.length; i++)
-                if (resTopics[i].attributes['subject-id'] == subject_id)
-                    topics_subject.push( resTopics[i] );
-              
-            this.setState({
-                topics: topics_subject
-            });
-        });
+        await this.props.dispatch( topicActions.getAllByForeanId( subject_id, 'subject' ) );
         
-        axios.get(api_route + "subjects/" + subject_id)
-        .then(response => {
-            this.setState({
-                subject: response.data.data
-            });
-        })
-        .catch(error => {
-            alert(error.message);
-        });
+        await this.props.dispatch( subjectActions.getById( subject_id ) );
     }
     
     render(){
+        let topics = [];
         
-        const topics = this.state.topics.map((topic, i) => {
+        if( !this.props.topic.data )
+        topics = this.props.topic.map((topic, i) => {
             return(
                 <Card key={i} title={topic.attributes.name} description={topic.attributes.description} route={"/questions/" + topic.id} />
             );
@@ -59,13 +35,13 @@ class Topic extends Component{
                 
                 <div className="panel mb-5">
                     <div className="panel-heading text-center my-5">
-                        <h1>Topics of {this.state.subject.attributes.name}</h1>
+                        <h1>Topics of {(this.props.subject.attributes ? this.props.subject.attributes.name : '')}</h1>
                     </div>
                     <div className="container">
                         <div className="panel-body row">
                         
                             {topics}
-                            <Card title="New topic" description={"Add a new topic to " + this.state.subject.attributes.name} route={"/new_topic/" + this.props.match.params.subject_id} />
+                            <Card title="New topic" description={"Add a new topic to " + (this.props.subject.attributes ? this.props.subject.attributes.name : '')} route={"/new_topic/" + this.props.match.params.subject_id} />
                             
                         </div>
                     </div>
@@ -79,4 +55,12 @@ class Topic extends Component{
     
 }
 
-export default Topic;
+function mapStateToProps( state ){
+    const { topic, subject } = state;
+    return {
+        topic,
+        subject
+    };
+}
+
+export default connect(mapStateToProps)(Topic);

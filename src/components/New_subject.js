@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
-import api_route from '../route';
+import subjectActions from '../_actions/actions-subject';
 
 import '../styles/Form.css';
 import '../styles/Titles.css';
@@ -13,30 +13,52 @@ class New_subject extends Component{
     constructor(props){
         super(props);
         
+        this.state = {
+            name: '',
+            submitted: false
+        }
+        
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
     
-    handleSubmit(e){
+    async handleSubmit(e){
         e.preventDefault();
         
-        const name = document.getElementById('_name').value;
+        const { name } = this.state;
         
         const data = {
-            name,
+            name: e.target.elements.name.value,
             number_of_topics: 0
         };
         
-        axios.post(api_route + "subjects", data)
-        .then(response => {
-            window.location.href = "/home";
-        })
-        .catch(error => {
-          alert(error.message, error.response);
+        this.setState({
+            submitted: true
         });
         
+        if( name )
+            await this.props.dispatch( subjectActions.addNew( data ) );
+    }
+    
+    handleChange(e){
+        const { name, value } = e.target;
+        this.setState({
+            [name]: value,
+            submitted: false
+        });
     }
     
     render(){
+        
+        if( this.props.subject.success )
+            window.location.href = "/home";
+        
+        const { submitted, name } = this.state;
+        const { success, data } = this.props.subject;
+        
+        let nameError = '';
+        if( !success && data.data )
+            nameError = data.data.name;
         
         return(
             <div>
@@ -51,21 +73,23 @@ class New_subject extends Component{
                             </div>
                             <div className="panel-body px-5">
                                 <form onSubmit={ this.handleSubmit } className="pt-3">
-                                    <div className="form-group">
-                                        <label htmlFor="_name">Name(*):</label>
-                                        <input type="text" className="form-control" id="_name" name="_name" required />
+                                    <div className={ 'form-group' + (submitted && ( !name || nameError) ? ' has-error': '')}>
+                                        <label htmlFor="name">Name:</label>
+                                        <input type="text" className="form-control" id="name" name="name" value={name} onChange={this.handleChange}/>
+                                        { submitted && !name && <div className='help-block'><small>Name is required</small></div> }
+                                        { submitted && nameError && <div className='help-block'><small>{ nameError }</small></div> }
                                     </div>
                                     <div className="form-group">
-                                        <label htmlFor="_description">Description:</label>
-                                        <input type="text" className="form-control" id="_description" name="_description" />
+                                        <label htmlFor="description">Description:</label>
+                                        <input type="text" className="form-control" id="description" name="description" />
                                     </div>
                                     <div className="row pt-3 mb-5">
                                         <div className="col">
-                                            <input type="submit" className="btn btn-success btn-block active" value="Add me!" />
+                                            <input type="submit" className="btn btn-success btn-block active" defaultValue="Add me!" />
                                         </div>
                                         <div className="col">
                                             <a href="/home">
-                                                <input className="btn btn-danger btn-block active" value="Go back!" />
+                                                <input className="btn btn-danger btn-block active" defaultValue="Go back!" />
                                             </a>
                                         </div>
                                     </div>
@@ -82,4 +106,11 @@ class New_subject extends Component{
     }
 }
 
-export default New_subject;
+function mapStateToProps( state ){
+    const { subject } = state;
+    return {
+        subject
+    };
+}
+
+export default connect(mapStateToProps)(New_subject);
