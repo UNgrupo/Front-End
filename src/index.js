@@ -10,7 +10,7 @@ import { createLogger } from 'redux-logger';
 import allReducers from './_reducers';
 
 import './styles/index.css';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 
 import App from './components/App';
@@ -54,9 +54,9 @@ ReactDOM.render(
                 <Route path="/topics/:subject_id" component={Topic} />
                 <Route path='/new_subject' component={New_subject}/>
                 <Route path='/new_topic/:subject_id' component={New_topic}/>
-                <Route exact path='/questions/:topic_id' component={Questions}/>
-                <Route exact path='/questions/new_question/:topic_id' component={New_question}/>
-                <Route exact path='/questions/:topic_id/:question_id' component={Question}/>
+                <Route exact strict path='/questions/:topic_id' component={Questions}/>
+                <Route exact strict path='/questions/new_question/:topic_id' component={New_question}/>
+                <Route exact strict path='/questions/:topic_id/:question_id' component={Question}/>
             </div>
         </BrowserRouter>
     </Provider>

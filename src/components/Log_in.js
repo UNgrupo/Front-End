@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import axios from 'axios';
+import api_route from '../route';
+
+import GoogleLogin from 'react-google-login';
+import FacebookLogin from 'react-facebook-login';
+
 import Footer from './Footer.js';
 import userActions from '../_actions/actions-user.js';
 
 import '../styles/Log_in-Sign_up.css';
-
 
 class Log_in extends Component {
   
@@ -15,35 +20,32 @@ class Log_in extends Component {
         this.props.dispatch(userActions.logout());
         
         this.state = {
-            username: '',
+            email: '',
             password: '',
-            submitted: false,
-            match: true
+            submitted: false
         };
         
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.responseFacebook = this.responseFacebook.bind(this);
     }
-    
-  async componentDidMount(){
-    await this.props.dispatch(userActions.getAll());
-  }
     
   async handleSubmit(e){
     
     e.preventDefault();
     
-    const username = e.target.elements.username.value;
-    const password = e.target.elements.password.value;
-    const { users, dispatch } = this.props;
+    const user = {
+        email: e.target.elements.email.value,
+        password: e.target.elements.password.value
+    };
+    const { dispatch } = this.props;
     
-    if (username && password) {
-        await dispatch(userActions.login(users, username, password)); //Users es solo necesario en este momento por que no tengo forma de acceder a la api de otras forma, cambiar tambien en users-actions
+    if (user.email && user.password) {
+        await dispatch(userActions.login( user ));
     }
     
     this.setState({ 
-      submitted: true,
-      match: false
+      submitted: true
     });
     
   }
@@ -52,29 +54,60 @@ class Log_in extends Component {
     const {name, value} = e.target;
     this.setState({
       [name]: value,
-      match: true
+      submitted: false
     });
+  }
+  
+  responseFacebook(response) {
+    console.log(response);
+      axios.post(api_route + "auth/facebook/callback", response.accessToken)
+      .then(response => {
+        console.log( response );
+      })
+      .catch(error =>{
+        console.log(error.response);
+        //window.location = "http://m.facebook.com/logout.php?confirm=1&next=https://front-ungrupo-caenietoba.c9users.io";
+      });
   }
   
   render() {
     
-    const {submitted, username, password, match} = this.state;
-    
+    const {submitted, email, password} = this.state;
+    const { data, logged_in } = this.props.authentication;
+      
+    const responseGoogle = (response) => {
+      
+    };
+  
+    const responseFacebook = (response) => {
+      console.log(response);
+      axios.post(api_route + "auth/facebook/callback", response.accessToken)
+      .then(response => {
+        console.log( response );
+      })
+      .catch(error =>{
+        console.log(error.response);
+        window.location = "http://m.facebook.com/logout.php?confirm=1&next=https://front-ungrupo-caenietoba.c9users.io"
+      });
+    };
+      
     return (
+      
       <div className="container">
         <h1 className="title-proyect deepshadow">Proyecto ungrupo</h1>
         <div className="container-form-pad">
           <div className="container-form p-4">
             <h1 className="display-3 title-form">Log in</h1>
             <form className="form" onSubmit={this.handleSubmit}>
-              {submitted && !match && <div className='help-block text-center py-2 text-danger'>The user doesnt exist or the password doesnt match</div>}
-              <div className={"form-group" + (submitted && !username ? " has-error" : '')}>
-                <label className="control-label" htmlFor="username">Username (*):</label>
-                <input type="text" className="form-control" placeholder="username" id="username" name="username" value={username} onChange={this.handleChange}/>
-                {submitted && !username && <div className="help-block"><small>Username is required</small></div>}
+              {submitted && !logged_in && email && password && <div className='help-block text-center py-2 text-danger'>{ data }</div>}
+              {submitted && logged_in && email && password && <div className='help-block text-center py-2 text-success'><big>{ data }</big></div>}
+              <div className={"form-group" + (submitted && !email ? " has-error" : '')}>
+                <label className="control-label" htmlFor="email">Email:</label>
+                <input type="text" className="form-control" placeholder="email" id="email" name="email" value={email} onChange={this.handleChange}/>
+                {submitted && !email && <div className="help-block"><small>email is required</small></div>}
               </div>
               <div className={"form-group" + (submitted && !password ? ' has-error' : '')}>
-                <label htmlFor="password">Password (*):</label>
+                <label htmlFor="password">Password:</label>
                 <input type="password" className="form-control" placeholder="password" id="password" name="password" value={password} onChange={this.handleChange}/>
                 {submitted && !password && <div className="help-block"><small>Password is required</small></div>}
               </div>
@@ -82,12 +115,28 @@ class Log_in extends Component {
                 <input type="submit" className="btn btn-success btn-block active" value="Log me in!" />
               </div>
               <div className="row pt-4">
-                <div className="col">
+                <div className="col text-center center-aling">
                   <a href="#">Did you forget password?</a>
                 </div>
-                <div className="col">
+                <div className="col text-center">
                   <a href="/sign_up">Want to sign up?</a>
                 </div>
+              </div>
+              <div className='form-inline d-flex justify-content-around py-3'>
+                <GoogleLogin
+                  clientId="681896092557-qee8kcngrao8jmjqsrn36f3mjkaia9dh.apps.googleusercontent.com"
+                  onSuccess={responseGoogle}
+                  onFailure={responseGoogle}
+                  className='loginBtn loginBtn--google'
+                />
+                <FacebookLogin 
+                  appId="1978366042223188"
+                  autoLoad={true}
+                  fields="name,email,picture"
+                  callback={this.responseFacebook}
+                  cssClass="loginBtn loginBtn--facebook"
+                  xfbml={true}
+                />
               </div>
             </form>
           </div>
@@ -98,11 +147,17 @@ class Log_in extends Component {
   }
 }
 
+//2245067805765444
+//1978366042223188
+//tnzjjgjjve_1540777059@tfbnw.net
+//1598753
+//https://www.oauthlogin.com/documentation.html
+
 function mapStateToProps(state) {
-    const { users } = state;
-    return {
-        users
-    };
+  const { authentication } = state;
+  return {
+      authentication
+  };
 }
 
-export default connect(mapStateToProps)(Log_in)
+export default connect(mapStateToProps)(Log_in);

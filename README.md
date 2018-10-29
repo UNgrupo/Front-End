@@ -11,6 +11,9 @@ Navigation: [Website][1] | [BackEnd repository][2] | **BackEnd repository**
 # npm install axios -save
 # npm install --save redux
 # npm install --save react-redux
+# npm install --save react-fontawesome
+# npm install --save react-facebook-login
+# npm install --save react-google-login
 
 
 # Cosas por hacer del lado del back

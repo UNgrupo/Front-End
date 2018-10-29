@@ -1,62 +1,68 @@
 import api_route from '../route';
 import axios from 'axios';
 
+import authHeader from '../Auth-header.js';
+import Common from './actions-common';
+
+const element = 'users';
+const commonActions = new Common(element);
+
 const userActions = {
-    getAll,
+    ...commonActions.getActions,
     login,
-    getUser,
     logout,
-    signUp
+    signUp,
 };
 
 export default userActions;
 
-function getAll(){
+function login( user ){
+    
+    const { email, password } = user;
     
     return dispatch => {
+        const data = {
+        	"auth": {
+        		"email": email,
+        		"password": password
+        	}
+        };
         document.body.classList.add('busy-cursor');
-        axios.get(api_route + '/users')
+        axios.post(api_route + 'user_token', data)
         .then(response => {
-            dispatch(success(response.data.data));
+            console.log( response );
+            const token = response.data;
+            if( token && token.jwt ){
+                dispatch(success( 'Log success' ));
+                window.localStorage.setItem('user', JSON.stringify( token ));
+                getUserId( email, token );
+            }
         })
         .catch(error => {
-            dispatch(failure(error.message));
+            dispatch(failure('The user doesnt exist or doesnt match the password'));
         });
         document.body.classList.remove('busy-cursor');
     };
     
-    function success(users) { return { type: 'GET-USERS-SUCCESS', data: users } }
-    function failure(error) { return { type: 'GET-USERS-FAILURE', data: error } }
-}
-
-function login(users, username, password){
-    let user;
-    
-    for(let i=0; i<users.length; i++){
-      if(users[i].attributes.usern === username){
-        if(users[i].attributes.password === password){
-            user = users[i];
-            window.localStorage.setItem('user', user);
-            window.location.href = "/home";         
-        }
-        break;
-      }
-    }
-    
-    return dispatch => {
-        (user ? dispatch(success(user)) : dispatch(failure('login failure')));
-    };
-    
-    function success(users) { return { type: 'LOGIN-SUCCESS', data: users } }
+    function success(user) { return { type: 'LOGIN-SUCCESS', data: user } }
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
-}
-
-async function getUser(id){
-    const user = await axios.get(api_route + 'users/' + id);
-    return({
-        type: 'GET-USER',
-        data: user
-    });
+    function getUserId( email, token ){ 
+        document.body.classList.add('busy-cursor'); 
+        axios.get(api_route + 'users.json', {headers: authHeader()})
+        .then(response => {
+            response.data.data.map( user => {
+                if(user.attributes.email === email){
+                    window.localStorage.setItem('user-id', user.id);
+                    window.location.href = "/home";
+                }
+                return true;
+            });  
+        })
+        .catch(error => {
+            console.log(error.response);
+        });
+        document.body.classList.remove('busy-cursor');
+    }
 }
 
 function logout(){
@@ -66,41 +72,29 @@ function logout(){
     });
 }
 
-function signUp(user, users){
+function signUp(user){
     
-    const {email, usern} = user;
-    
-    return dispatch => {
+    return async dispatch => {
         
-        let already_exist = false;
-        
-        for(let i=0; i<users.length; i++){
-            if( users[i].attributes.email == email ){
-                dispatch(failure('The email has been used already'));
-                already_exist = true;
-                break;
-            } else if( users[i].attributes.usern == usern ){
-                dispatch(failure('The username its not availible'));
-                already_exist = true;
+        const newUser = {
+            "user": {
+                ...user
             }
-        }
+        };
         
-        if( !already_exist ){
-            document.body.classList.add('busy-cursor');
-            axios.post(api_route + 'users', user)
-            .then(response => {
-                dispatch(success('User added succesfully'));
-                window.localStorage.setItem('user', user);
-                window.location.href = "/home";
-            })
-            .catch(error => {
-                dispatch(failure(error.message));
-            });
-            document.body.classList.remove('busy-cursor');
-        }
+        document.body.classList.add('busy-cursor');
+        await axios.post(api_route + 'users', newUser)
+        .then(response => {
+            dispatch(success('User added succesfully'));
+            dispatch( login( user ) );
+        })
+        .catch(error => {
+            dispatch(failure(error.response));
+        });
+        document.body.classList.remove('busy-cursor');
+    };    
     
     function success(message) { return { type: 'SIGNUP-SUCCESS', data: message } }
-    function failure(error_message) { return { type: 'SIGNUP-FAILURE', data: error_message } }
+    function failure(error) { return { type: 'SIGNUP-FAILURE', data: error } }
     
-    };
 }

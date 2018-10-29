@@ -1,5 +1,5 @@
 const initial_state = {
-    logged_in: false,
+    success: false,
     data: {}
 };
 
@@ -7,19 +7,22 @@ const userReducer = function(state = initial_state, action){
     const {type, data} = action;
     
     switch(type){
-        case 'LOGIN-SUCCESS':
-            return({
-                logged_in: true,
-                data
-            });
-        case 'LOGIN-FAILURE':
-            console.log(data)
-            return({
-                logged_in: false,
-                data
-            });
-        case 'LOGOUT-SUCCESS':
+        case 'GET-USERS-SUCCESS':
+            return data;
+        case 'GET-USERS-FAILURE':
+            return [];
+        case 'GET-USER-SUCCESS':
+            return data;
+        case 'GET-USER-FAILURE':
             return state;
+        case 'DELETE-USER-SUCCESS':
+            return data;
+        case 'DELETE-USER-FAILURE':
+            return data;
+        case 'UPDATE-USER-SUCCESS':
+            return data;
+        case 'UPDATE-USER-FAILURE':
+            return data;
         default:
             return state;
     }

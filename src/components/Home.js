@@ -1,42 +1,32 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
 import Card from './Card.js';
-import api_route from '../route';
+import subjectActions from '../_actions/actions-subject';
 
 class Home extends Component {
   
-  constructor(props){
-    super(props);
-    this.state = {
-      subjects: []
-    };
-  }
-  
   componentDidMount(){
-    axios.get(api_route + 'subjects')
-    .then((response) => {
-      this.setState({
-        subjects: response.data.data
-      });
-    });
+    this.props.dispatch( subjectActions.getAll() );
   }
   
   render() {
     
-    const subjects = this.state.subjects.map((subject, i) => {
-      const sub = subject.attributes;
-      return (
-        <Card key={i} title={sub.name} description={"The subject has " + sub['number-of-topics'] + " topics"} route={"/topics/" + subject.id} />
-      );
-    });
+    let subjects = [];
+    
+    if( !this.props.subject.data )
+      subjects = this.props.subject.map((subject, i) => {
+        const sub = subject.attributes;
+        return (
+          <Card key={i} title={sub.name} description={"The subject has " + sub['number-of-topics'] + " topics"} route={"/topics/" + subject.id} />
+        );
+      });
     
     return (
         <div>
           <Navbar />
-          
           <div className="mb-5">
             <div className="panel panel-info">
               <div className="panel-heading">
@@ -45,7 +35,7 @@ class Home extends Component {
               <div className="container">
                 <div className="panel-body row">
                 
-                  {subjects} {/* Tarjetas on todas las materias de la base de datos */}
+                  {subjects}
                   <Card title="New Subject" description="Add a new subject" route="/new_subject"/>
                   
                 </div>
@@ -59,4 +49,11 @@ class Home extends Component {
   }
 }
 
-export default Home;
+function mapStateToProps( state ){
+  const { subject } = state;
+  return {
+    subject
+  };
+}
+
+export default connect(mapStateToProps)(Home);

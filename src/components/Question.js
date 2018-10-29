@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
-import api_route from '../route';
-import {order_qualification, order_date} from '../scripts/orderData';
+import sortAlgorithms from '../scripts/orderData';
+import userActions from '../_actions/actions-user';
+import questionActions from '../_actions/actions-question';
+import answerActions from '../_actions/actions-answer';
+import commentActions from '../_actions/actions-comment';
 
 import '../styles/Question.css';
 import Thumb_up from '../resources/thumb-up.jpg';
@@ -15,15 +18,9 @@ class Question extends Component{
     constructor(props){
         super(props);
         this.state = {
-            question: {attributes: {}},
             user_question: {attributes: {name: ''}},
-            users: [],
-            answers: [], 
-            comments: []
         };
         
-        this.order_qualification = this.order_qualification.bind(this);
-        this.order_date = this.order_date.bind(this);
         this.handleClickUp = this.handleClickUp.bind(this);
         this.handleClickDown = this.handleClickDown.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -31,108 +28,27 @@ class Question extends Component{
         this.handleSubmitAnswer = this.handleSubmitAnswer.bind(this);
     }
     
-    order_qualification(a, b){
-        if (a.attributes.qualification < b.attributes.qualification)
-            return 1;
-        if (a.attributes.qualification > b.attributes.qualification)
-            return -1;           
-        return 0;
-    }
-    
-    order_date(a, b){
-        if (a.attributes.date < b.attributes.date)
-            return 1;
-        if (a.attributes.date > b.attributes.date)
-            return -1;           
-        return 0;
-    }
-    
     async componentDidMount(){
           const {question_id} = this.props.match.params;
+          const {dispatch} = this.props;
           
-          await axios.get(api_route + 'questions/' + question_id)
-          .then(response => {
-              this.setState({
-                  question: response.data.data
-              });
-          })
-          .catch(error => {
-              alert(error.message);
-          });
+          await dispatch( questionActions.getById( question_id ) );
           
-          await axios.get(api_route + 'users/' + this.state.question.attributes['user-id'])
-          .then(response => {
-              this.setState({
-                  user_question: response.data.data
-              });
-          });
+          await dispatch( userActions.getAll() );
           
-          await axios.get(api_route + 'users')
-          .then(response => {
-              this.setState({
-                  users: response.data.data
-              });
-          })
-          .catch(error => {
-              alert(error.message);
-          });
+          await dispatch( answerActions.getAllByForeanId( question_id, 'question', sortAlgorithms.orderQualificationGreater ) );
           
-          await axios.get(api_route + 'answers')
-          .then(response => {
-              let answers = [];
-              const resAnswers = response.data.data;
-              for(let i=0; i<resAnswers.length; i++){
-                  if(resAnswers[i].attributes['question-id'] == question_id)
-                    answers.push(resAnswers[i]);
-              }
-              //answers.sort(order_qualification);
-              answers.sort(this.order_qualification);
-              this.setState({
-                  answers
-              });
-          })
-          .catch(error => {
-              alert(error.message);
-          });
-          
-          await axios.get(api_route + 'comments')
-          .then(response => {
-              let comments = [];
-              const resComments = response.data.data;
-              
-              for(let i=0; i<this.state.answers.length; i++){
-                  let comments_i = [];
-                  for(let j=0; j<resComments.length; j++){
-                      if(this.state.answers[i].id == resComments[j].attributes['answer-id']){
-                          comments_i.push(resComments[j]);
-                      }
-                  }
-                  comments.push(comments_i);
-              }
-              //comments.sort(order_date);
-              comments.sort(this.order_date);
-              this.setState({
-                  comments
-              });
-          })
-          .catch(error => {
-              alert(error.message);
-          });
+          await dispatch( commentActions.getAllCommentsOfQuestion(  ) );
     }
     
-    handleClick(answer, number){ //IMPORTANTE Revisar como reenderizar el componente
+    async handleClick(answer, number){ //IMPORTANTE Revisar como reenderizar el componente
         const ans = answer.target.value.split(',');
         const data = {
             qualification: parseInt(ans[1], 10) + number
-        }
-        axios.put(api_route + 'answers/' + ans[0], data)
-        .then(response => {
-            this.forceUpdate();
-            this.setState();
-        })
-        .catch(error => {
-            alert(error.message);
-        });
+        };
+        
+        await this.props.dispatch( answerActions.update( ans[0], data) );
+        window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
     }
     
     handleClickUp(answer){
@@ -145,96 +61,110 @@ class Question extends Component{
     
     handleSubmitComment(e){
         
+        e.preventDefault();
+        
         const data = {
-            description: e.target.elements._comment.value, //Forma de acceder a los valores de el evento por onSubmit
+            description: e.target.elements._comment.value,
             date: (new Date()).toUTCString(),
-            user_id: 1, //Depende del usuario actual.... IMPORTANTE
+            user_id: window.localStorage.getItem( 'user-id' ),
             answer_id: e.target.elements._answer_id.value
         };
         
-        axios.post(api_route + 'comments', data)
-        .then(response => {
-            alert("Comment Added");
-        })
-        .catch(error => {
-            if(error.response.status === 422){
-                alert("Length too short, please be sure to use minimun 15 characters");   
-            }
-        });
+        this.props.dispatch( commentActions.addNew( data ) );
+        
+        window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
     }
     
     handleSubmitAnswer(e){
+        
+        e.preventDefault();
         
         const data = {
             description: e.target.elements._answer.value,
             qualification: 0,
             date: (new Date()).toUTCString(),
-            user_id: 1, //Depende del usuario actual.... IMPORTANTE
+            user_id: window.localStorage.getItem( 'user-id' ),
             question_id: this.props.match.params.question_id
-        }
+        };
         
-        axios.post(api_route + 'answers', data)
-        .then(response => {
-            alert("Answer Added");
-        })
-        .catch(error => {
-            if(error.response.status === 422){
-                alert("Length too short, please be sure to use minimun 15 characters");   
-            }
-        });
+        this.props.dispatch( answerActions.addNew( data ) );
+        
+        window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
     }
     
     render(){
         
+        //if( this.props.comment.data && !this.props.answer.data )
+            //this.props.dispatch( commentActions.getAllCommentsOfQuestion( this.props.answer, sortAlgorithms.orderDateGreater ) ); //revisar como sacar los comentarios
+        
+        console.log(this.props.comment);
+        
         let comments = [];
         
-        for(let i=0; i<this.state.comments.length; i++){
-            comments.push(
-                this.state.comments[i].map(comment => {
+        if( !this.props.comment.data )
+            for(let i=0; i<this.props.comment.length; i++){
+                comments.push(
+                    this.props.comment[i].map(comment => {
+                        const userComment = this.props.user[comment.attributes['user-id']-1].attributes;
+                        return(
+                            <div key={comment.id} className="media p-3 container-form-comment mb-1 mt-1"> 
+                                <img src={userComment.photo} alt={userComment.name} className="mr-3 mt-3 rounded-circle" />
+                                <div className="media-body">
+                                    <h4>{userComment.name + "    "}      
+                                        <small><i>{comment.attributes.date}</i></small>
+                                    </h4>
+                                    <p>{comment.attributes.description}</p>
+                                </div>
+                            </div>
+                        );
+                    })
+                );
+            }
+        
+        let answers = [];
+        if( !this.props.answer.data )
+            answers = this.props.answer.map((answer,i) => {
+                
+                let userAnswer = {};
+                if( this.props.user && !this.props.user.data ){
+                    userAnswer = this.props.user[answer.attributes['user-id']-1].attributes;
+                    
                     return(
-                        <div key={comment.id} className="media p-3 container-form-comment mb-1 mt-1"> 
-                            <img src={this.state.users[comment.attributes['user-id']-1].attributes.photo} alt={this.state.users[comment.attributes['user-id']-1].attributes.name} className="mr-3 mt-3 rounded-circle" />
+                        <div key={answer.id} className="media p-3 container-form-2"> 
+                            <img src={userAnswer.photo} alt={userAnswer.name} className="mr-3 mt-3 rounded-circle" />
                             <div className="media-body">
-                                <h4>{this.state.users[comment.attributes['user-id']-1].attributes.name + "    "}      
-                                    <small><i>{comment.attributes.date}</i></small>
+                                <h4>{userAnswer.name + "    "}      
+                                    <small><i>{answer.attributes.date}</i></small>
                                 </h4>
-                                <p>{comment.attributes.description}</p>
+                                <p>{answer.attributes.description}</p>
+                                <div className="row txt-r">
+                                    <p className="pr-2">Qualification: {answer.attributes.qualification}</p>
+                                    <input type="image" alt="Thumb up" src={Thumb_up} className="image-like" value={[answer.id, answer.attributes.qualification]} onClick={this.handleClickUp} />
+                                    <input type="image" alt="Thumb down" src={Thumb_down} className="image-like" value={[answer.id, answer.attributes.qualification]} onClick={this.handleClickDown} />
+                                </div>
+                                <form onSubmit={this.handleSubmitComment}>
+                                    <div className="form-group shadow-textarea">
+                                        <label htmlFor="_comment"><small>Comments</small></label>
+                                        <textarea className="form-control z-depth-1" id="_comment" name="_comment" rows="3" placeholder="Write your comment here..."></textarea>
+                                    </div>
+                                    <input type="hidden" id="_answer_id" name="_answer_id" value={answer.id} />
+                                    <div className="txt-r">
+                                        <input type="submit" className="btn btn-success active" value="Submit comment!" />
+                                    </div>
+                                </form>
+                                {comments[i]}
                             </div>
                         </div>
                     );
-                })
-            );
-        }
+                }
+                return <div key={i}></div>;
+            
+            });
         
-        const answers = this.state.answers.map((answer,i) => {
-            return(
-                <div key={answer.id} className="media p-3 container-form-2"> 
-                    <img src={this.state.users[answer.attributes['user-id']-1].attributes.photo} alt={this.state.users[answer.attributes['user-id']-1].attributes.name} className="mr-3 mt-3 rounded-circle" />
-                    <div className="media-body">
-                        <h4>{this.state.users[answer.attributes['user-id']-1].attributes.name + "    "}      
-                            <small><i>{answer.attributes.date}</i></small>
-                        </h4>
-                        <p>{answer.attributes.description}</p>
-                        <div className="row txt-r">
-                            <p className="pr-2">Qualification: {answer.attributes.qualification}</p>
-                            <input type="image" alt="Thumb up" src={Thumb_up} className="image-like" value={[answer.id, answer.attributes.qualification]} onClick={this.handleClickUp} />
-                            <input type="image" alt="Thumb down" src={Thumb_down} className="image-like" value={[answer.id, answer.attributes.qualification]} onClick={this.handleClickDown} />
-                        </div>
-                        <form onSubmit={this.handleSubmitComment}>
-                            <div className="form-group shadow-textarea">
-                                <label htmlFor="_comment"><small>Comments</small></label>
-                                <textarea className="form-control z-depth-1" id="_comment" name="_comment" rows="3" placeholder="Write your comment here..."></textarea>
-                            </div>
-                            <input type="hidden" id="_answer_id" name="_answer_id" value={answer.id} />
-                            <div className="txt-r">
-                                <input type="submit" className="btn btn-success active" value="Submit comment!" />
-                            </div>
-                        </form>
-                        {comments[i]}
-                    </div>
-                </div>
-            );
-        });
+        const { question } = this.props;
+        let userQuestionId = 0;
+        if( question.data.attributes )
+            userQuestionId = this.props.question.data.attributes['user-id'];
         
         return(
             <div>
@@ -243,15 +173,15 @@ class Question extends Component{
                 
                 <div className="container">
                     <div className="px-5 mx-5">
-                        <h2 className="text-center my-5">{this.state.question.attributes.title}</h2>
+                        <h2 className="text-center my-5">{(question.data.attributes ? question.data.attributes.title : '')}</h2>
                         
                         <div className="media p-3 container-form-comment mb-1 mt-1"> 
-                            <img src={this.state.user_question.attributes.photo} alt={this.state.user_question.attributes.name} className="mr-3 mt-3 rounded-circle" />
+                            <img src={(this.props.user[userQuestionId] ? this.props.user[userQuestionId].attributes.photo : '')} alt={(this.props.user[userQuestionId] ? this.props.user[userQuestionId].attributes.name : '')} className="mr-3 mt-3 rounded-circle" />
                             <div className="media-body">
-                                <h4>{this.state.user_question.attributes.name + "    "}      
-                                    <small><i>{this.state.question.attributes.date}</i></small>
+                                <h4>{(this.props.user[userQuestionId] ? this.props.user[userQuestionId].attributes.name : '') + "    "}      
+                                    <small><i>{(question.data.attributes ? question.data.attributes.date : '')}</i></small>
                                 </h4>
-                                <p>{this.state.question.attributes.description}</p>
+                                <p>{(question.data.attributes ? question.data.attributes.description : '')}</p>
                             </div>
                         </div>
                         
@@ -277,4 +207,14 @@ class Question extends Component{
     }
 }
 
-export default Question;
+function mapStateToProps( state ){
+    const {user, answer, question, comment} = state;
+    return {
+        user,
+        answer,
+        question,
+        comment
+    };
+}
+
+export default connect(mapStateToProps)(Question);

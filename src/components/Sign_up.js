@@ -31,10 +31,6 @@ class Sign_up extends Component {
         this.handleChange = this.handleChange.bind(this);
     }
     
-  async componentDidMount(){
-    await this.props.dispatch(userActions.getAll());
-  }
-    
   async handleSubmit(e){
     
     e.preventDefault();
@@ -53,22 +49,22 @@ class Sign_up extends Component {
       return;
     } 
   
-    const user = {
+    const newUser = {
       name,
       email,
       usern: username,
       password,
       level: 1,
       reputation: 'Bronze V',
-      role: 'strudent',
+      role: 'student',
       'number-of-followers': 0,
       photo: null
     };
     
-    const {dispatch, users} = this.props;
+    const {dispatch} = this.props;
     
     if( username && email && name && password && confirmPassword )
-      await dispatch( userActions.signUp( user, users ) );
+      await dispatch( userActions.signUp( newUser ) );
     
     this.setState({
       submitted: true
@@ -80,7 +76,8 @@ class Sign_up extends Component {
     const {name, value} = e.target;
     
     this.setState({
-      [name]: value
+      [name]: value, 
+      submitted: false
     });
   }
   
@@ -89,7 +86,8 @@ class Sign_up extends Component {
     
     this.setState({
       securityPassword: testPassword(password),
-      password
+      password, 
+      submitted: false
     });
   }
   
@@ -98,13 +96,20 @@ class Sign_up extends Component {
     
     this.setState( {
       confirmPassword: password,
-      matchPasswords: true
+      matchPasswords: true, 
+      submitted: false
     } );
   }
   
   render() {
     
     const {submitted, matchPasswords, confirmPassword, password, username, name, email} = this.state;
+    let emailError = '', nameError = '', usernError = '';
+    if( this.props.authentication.data.data ){
+      emailError = this.props.authentication.data.data.email;
+      nameError = this.props.authentication.data.data.name;
+      usernError = this.props.authentication.data.data.usern;
+    }
     
     return (
       <div className="container">
@@ -114,21 +119,23 @@ class Sign_up extends Component {
             <h1 className="display-3 title-form">Sign up</h1>
             <form name="sign-up-form" onSubmit={this.handleSubmit}>
               <div className="form-left">
-                { submitted && this.props.signUp.data && <div className='help-block text-center py-2 text-danger'>{this.props.signUp.data}</div> }
-                <div className={'form-group pt-2' + (submitted && !username ? ' has-error': '')}>
+                <div className={'form-group pt-2' + (submitted && (!username || usernError) ? ' has-error': '')}>
                   <label htmlFor="username">Username:</label>
                   <input type="text" placeholder="username" className="form-control" id="username" name="username" value={username} onChange={this.handleChange}/>
                   { submitted && !username && <div><small>Username is required</small></div> }
+                  { submitted && usernError && <div><small>{ usernError }</small></div> }
                 </div>
-                <div className={'form-group' + (submitted && !name ? ' has-error': '')}>
+                <div className={'form-group' + (submitted && (!name || nameError ) ? ' has-error': '')}>
                   <label htmlFor="name">Name:</label>
                   <input type="text" placeholder="First and second name" className="form-control" id="name" name="name" value={name} onChange={this.handleChange}/>
                   { submitted && !name && <div><small>Name is required</small></div> }
+                  { submitted && nameError && <div><small>{ nameError }</small></div> }
                 </div>
-                <div className={'form-group' + (submitted && !email ? ' has-error': '')}>
+                <div className={'form-group' + (submitted && (!email || emailError) ? ' has-error': '')}>
                   <label htmlFor="email">Email:</label>
                   <input type="text" placeholder="example@unal.edu.co" className="form-control" id="email" name="email" value={email} onChange={this.handleChange}/>
                   { submitted && !email && <div><small>Email is required</small></div> }
+                  { submitted && emailError && <div><small>{ emailError }</small></div> }
                 </div>
                 <div className={'form-group' + (submitted && !password ? ' has-error': '')}>
                   <label htmlFor="password">Password:</label>
@@ -159,10 +166,9 @@ class Sign_up extends Component {
 }
 
 function mapStateToProps(state) {
-    const { users, signUp } = state;
+    const { authentication } = state;
     return {
-        users,
-        signUp
+        authentication
     };
 }
 
