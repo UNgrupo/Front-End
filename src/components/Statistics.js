@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { VictoryPie, VictoryChart, VictoryTheme, VictoryLegend, VictoryTooltip, VictoryAxis, VictoryArea } from 'victory';
-//import html2pdf from 'html2pdf.js';
+import html2pdf from 'html2pdf.js';
 
 import statisticActions from '../_actions/actions-statistic';
 import questionActions from '../_actions/actions-question';
@@ -13,6 +13,12 @@ import getRandomColor from '../scripts/randomColor';
 
 class Statistics extends Component {
   
+  constructor(props){
+    super(props);
+    
+    this.downloadStatisticsPdf = this.downloadStatisticsPdf.bind(this);
+  }
+  
   componentDidMount(){
     
     const {dispatch} = this.props;
@@ -22,6 +28,21 @@ class Statistics extends Component {
     dispatch( questionActions.getAllByForeanId( userId, 'user' ) );
     dispatch( answerActions.getAllByForeanId( userId, 'user' ) );
     dispatch( commentActions.getAllByForeanId( userId, 'user' ) );
+  }
+  
+  downloadStatisticsPdf(){
+    var element = document.getElementById('statisticsPdf');
+    var opt = {
+      margin:       1,
+      filename:     this.props.user.usern + 'Statistics.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    
+    html2pdf(element, opt).set({
+      pagebreak: { mode: 'avoid-all', before: '#page2el' }
+    });
   }
   
   render() {
@@ -86,66 +107,52 @@ class Statistics extends Component {
       });
     }
     
-    /*var element1 = <div>
-      <h1> Hola mundo cruel </h1>
-    </div>
-    var element = document.getElementById('statisticsPdf');
-    var opt = {
-      margin:       1,
-      filename:     'myfile.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
-    
-    html2pdf(element1, opt).set({
-      pagebreak: { mode: 'avoid-all', before: '#page2el' }
-    });*/
-    
     return (
-      
-      <div className='panel' id='statisticsPdf'>
-        <h1 className='text-center my-3 py-3'>Statistics of {this.props.user.usern}</h1>
-        <p className='px-5 mx-5'>
-          This are the statistics of the user {this.props.user.usern} with name {this.props.user.name}, 
-          to download this statistics in pdf format click the button at the end of the page
-        </p>
-        <div className='row'>
-          <div className='col-md-6 mb-5 d-flex align-items-center flex-column'>
-            <h2 className='my-5'>Points</h2>
-            {userStatistics.points}
+      <div>
+        <div className='panel' id='statisticsPdf'>
+          <h1 className='text-center my-3 py-3'>Statistics of {this.props.user.usern}</h1>
+          <p className='px-5 mx-5'>
+            This are the statistics of the user {this.props.user.usern} with name {this.props.user.name}, 
+            to download this statistics in pdf format click the button at the end of the page
+          </p>
+          <div className='row'>
+            <div className='col-md-6 mb-5 d-flex align-items-center flex-column'>
+              <h2 className='my-5'>Points</h2>
+              {userStatistics.points}
+            </div>
+            <div className='col-md-6 mb-5 d-flex align-items-center flex-column'>
+              <h2 className='my-5'>Questions</h2>
+              {userStatistics['number-of-questions']}
+            </div>
+            <div className='col-md-12 d-flex align-items-center flex-column'>
+              <h2>Answers</h2>
+              
+              <VictoryChart theme={VictoryTheme.material} domain={{x: [-1000, 1000], y: [0, 100]}} height={200}>
+              
+                <VictoryLegend x={50} y={0} gutter={20} orientation="horizontal"
+                  style={{ title: { fontSize: 20 } }}
+                  data={[ { name: "Total answers" }, { name: "Best answers" } ]}
+                />
+                
+                <VictoryAxis tickFormat={() => ''} style={{ axis: {stroke: "none"} }} />
+                
+                <VictoryPie labelComponent={<VictoryTooltip/>}
+                  style={{data: { stroke: 'yellow', fill: 'yellow' }, parent: { border: "1px solid #ccc"}}}
+                  data={basicUserStatistics}
+                />
+                
+              </VictoryChart>
+              
+            </div>
           </div>
-          <div className='col-md-6 mb-5 d-flex align-items-center flex-column'>
-            <h2 className='my-5'>Questions</h2>
-            {userStatistics['number-of-questions']}
-          </div>
-          <div className='col-md-12 d-flex align-items-center flex-column'>
-            <h2>Answers</h2>
-            
-            <VictoryChart theme={VictoryTheme.material} domain={{x: [-1000, 1000], y: [0, 100]}} height={200}>
-            
-              <VictoryLegend x={50} y={0} gutter={20} orientation="horizontal"
-                style={{ title: { fontSize: 20 } }}
-                data={[ { name: "Total answers" }, { name: "Best answers" } ]}
-              />
-              
-              <VictoryAxis tickFormat={() => ''} style={{ axis: {stroke: "none"} }} />
-              
-              <VictoryPie labelComponent={<VictoryTooltip/>}
-                style={{data: { stroke: 'yellow', fill: 'yellow' }, parent: { border: "1px solid #ccc"}}}
-                data={basicUserStatistics}
-              />
-              
-            </VictoryChart>
-            
+          
+          <div className='row' id='page2el'>
+            {statisticsCharts}
           </div>
         </div>
         
-        <div className='row' id='page2el'>
-          {statisticsCharts}
-        </div>
-        
-        <div className='row'>
+        <div className='text-center'>
+          <button className='btn btn-warning' onClick={this.downloadStatisticsPdf} >Download statistics PDF</button>
         </div>
       </div>
     );
