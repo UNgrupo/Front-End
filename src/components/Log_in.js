@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import axios from 'axios';
-import api_route from '../route';
 
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 
 import Footer from './Footer.js';
 import userActions from '../_actions/actions-user.js';
+import API_ROUTE from '../_helpers/Route-api';
 
 import '../styles/Log_in-Sign_up.css';
 
@@ -29,7 +29,7 @@ class Log_in extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.responseFacebook = this.responseFacebook.bind(this);
     }
-    
+  
   async handleSubmit(e){
     
     e.preventDefault();
@@ -60,9 +60,11 @@ class Log_in extends Component {
   
   responseFacebook(response) {
     console.log(response);
-      axios.post(api_route + "auth/facebook/callback", response.accessToken)
+      //axios.post(api_route + "auth/facebook/callback", response.accessToken)
+      axios.post(API_ROUTE + "auth/facebook/callback", "EAAcHUD0uslQBAClJfk1THiEsecflqLJcD5iLPZASErfZA7N3REvTkCAJVgZB7aSMhXb5rYC9ewHYp5fy00dXne8p9aZCkp80ZBMRHoXtsvBRYkZBZCNxmQAuiafchLfLDFtvaxH7coORe8ZCEEJJNH4juICyJZAN8bzodZBKRG8NIWvnSMu0Fm4ZBJ6ORZAz8XQE8dIZD" )
       .then(response => {
         console.log( response );
+        console.log( "hola" );
       })
       .catch(error =>{
         console.log(error.response);
@@ -78,18 +80,9 @@ class Log_in extends Component {
     const responseGoogle = (response) => {
       
     };
-  
-    const responseFacebook = (response) => {
-      console.log(response);
-      axios.post(api_route + "auth/facebook/callback", response.accessToken)
-      .then(response => {
-        console.log( response );
-      })
-      .catch(error =>{
-        console.log(error.response);
-        window.location = "http://m.facebook.com/logout.php?confirm=1&next=https://front-ungrupo-caenietoba.c9users.io"
-      });
-    };
+      
+    if( this.props.authentication.logged_in )
+      window.location.href = "/home";
       
     return (
       

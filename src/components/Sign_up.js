@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import Footer from './Footer.js';
 import {testPassword} from '../scripts/testPassword.js';
+import confirmEmail from '../scripts/confirmEmail.js';
 import userActions from '../_actions/actions-user.js';
 
 import '../styles/Log_in-Sign_up.css';
@@ -16,6 +17,7 @@ class Sign_up extends Component {
         
         this.state = {
           securityPassword: 'None',
+          isEmailValid: false,
           password: '',
           confirmPassword: '',
           name: '',
@@ -40,6 +42,7 @@ class Sign_up extends Component {
     const email = e.target.elements.email.value;
     const password = e.target.elements.password.value;
     const confirmPassword = e.target.elements.confirmPassword.value;
+    const isEmailValid = confirmEmail( email );
     
     if( confirmPassword !== password ){
       this.setState({
@@ -48,6 +51,11 @@ class Sign_up extends Component {
       });
       return;
     } 
+    
+    this.setState({
+      submitted: true,
+      isEmailValid
+    });
   
     const newUser = {
       name,
@@ -63,12 +71,8 @@ class Sign_up extends Component {
     
     const {dispatch} = this.props;
     
-    if( username && email && name && password && confirmPassword )
+    if( username && email && name && password && confirmPassword && isEmailValid )
       await dispatch( userActions.signUp( newUser ) );
-    
-    this.setState({
-      submitted: true
-    });
   }
   
   handleChange(e){
@@ -103,13 +107,16 @@ class Sign_up extends Component {
   
   render() {
     
-    const {submitted, matchPasswords, confirmPassword, password, username, name, email} = this.state;
+    const {submitted, matchPasswords, confirmPassword, password, username, name, email, isEmailValid} = this.state;
     let emailError = '', nameError = '', usernError = '';
     if( this.props.authentication.data.data ){
       emailError = this.props.authentication.data.data.email;
       nameError = this.props.authentication.data.data.name;
       usernError = this.props.authentication.data.data.usern;
     }
+    
+    if( this.props.authentication.logged_in )
+      window.location.href = "/home";
     
     return (
       <div className="container">
@@ -131,11 +138,12 @@ class Sign_up extends Component {
                   { submitted && !name && <div><small>Name is required</small></div> }
                   { submitted && nameError && <div><small>{ nameError }</small></div> }
                 </div>
-                <div className={'form-group' + (submitted && (!email || emailError) ? ' has-error': '')}>
+                <div className={'form-group' + (submitted && (!email || emailError || !isEmailValid) ? ' has-error': '')}>
                   <label htmlFor="email">Email:</label>
                   <input type="text" placeholder="example@unal.edu.co" className="form-control" id="email" name="email" value={email} onChange={this.handleChange}/>
                   { submitted && !email && <div><small>Email is required</small></div> }
                   { submitted && emailError && <div><small>{ emailError }</small></div> }
+                  { submitted && !isEmailValid && <div><small>The email cant have that form</small></div> }
                 </div>
                 <div className={'form-group' + (submitted && !password ? ' has-error': '')}>
                   <label htmlFor="password">Password:</label>

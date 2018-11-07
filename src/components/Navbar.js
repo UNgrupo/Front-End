@@ -21,7 +21,7 @@ class Navbar extends Component {
           <div className="collapse navbar-collapse offset-md-4" id="navbarSupportedContent">
             <ul className="navbar-nav mr-auto">
               <li className="nav-item active">
-                <a className="nav-link" href="#"><img className="img-nav" src={Profile} alt="Profile" title="Profile" /></a>
+                <a className="nav-link" href="/profile"><img className="img-nav" src={Profile} alt="Profile" title="Profile" /></a>
               </li>
               <li className="nav-item active">
                 <a className="nav-link" href="/"><img className="img-nav" src={Sign_out} alt="Sign out" title="Sign out" /></a>

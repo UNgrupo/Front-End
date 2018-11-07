@@ -19,6 +19,16 @@ class Question extends Component{
         super(props);
         this.state = {
             user_question: {attributes: {name: ''}},
+            Answer: {
+                submitted: false,
+                answer: ''
+            },
+            Comment: {
+                submitted: false,
+                answerId: 0, 
+                comment: ''
+            },
+            commentError: ''
         };
         
         this.handleClickUp = this.handleClickUp.bind(this);
@@ -26,6 +36,7 @@ class Question extends Component{
         this.handleClick = this.handleClick.bind(this);
         this.handleSubmitComment = this.handleSubmitComment.bind(this);
         this.handleSubmitAnswer = this.handleSubmitAnswer.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
     
     async componentDidMount(){
@@ -38,16 +49,16 @@ class Question extends Component{
           
           await dispatch( answerActions.getAllByForeanId( question_id, 'question', sortAlgorithms.orderQualificationGreater ) );
           
-          await dispatch( commentActions.getAllCommentsOfQuestion(  ) );
+          await dispatch( commentActions.getAllCommentsOfQuestion() );
     }
     
-    async handleClick(answer, number){ //IMPORTANTE Revisar como reenderizar el componente
+    async handleClick(answer, number){ 
         const ans = answer.target.value.split(',');
         const data = {
             qualification: parseInt(ans[1], 10) + number
         };
         
-        await this.props.dispatch( answerActions.update( ans[0], data) );
+        await this.props.dispatch( answerActions.update( ans[0], data) ); //Revisar lo de cors
         window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
     }
     
@@ -59,7 +70,7 @@ class Question extends Component{
         this.handleClick(answer, -1);
     }
     
-    handleSubmitComment(e){
+    async handleSubmitComment(e){
         
         e.preventDefault();
         
@@ -70,7 +81,16 @@ class Question extends Component{
             answer_id: e.target.elements._answer_id.value
         };
         
-        this.props.dispatch( commentActions.addNew( data ) );
+        await this.props.dispatch( commentActions.addNew( data ) );
+        
+        await this.setState({
+            Comment: { 
+                submitted: true
+            },
+            commentError: (this.props.comment.data && this.props.comment.data.data && this.props.comment.data.data.description ? this.props.comment.data.data.description[0] : '')
+        });
+        
+        await this.props.dispatch( commentActions.getAllCommentsOfQuestion() );
         
         window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
     }
@@ -89,15 +109,34 @@ class Question extends Component{
         
         this.props.dispatch( answerActions.addNew( data ) );
         
+        this.setState({
+            Answer: { submitted: true }
+        });
+        
         window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
     }
     
+    handleChange(e){
+        const {name, value, id} = e.target;
+        
+        if(name === '_comment')
+            this.setState({
+                Comment: { 
+                    comment: value, 
+                    answerId: id,
+                    submitted: false 
+                }
+            });
+        else if( name === '_answer' )
+            this.setState({
+                Answer: { 
+                    answer: value, 
+                    submitted: false 
+                }
+            });
+    }
+    
     render(){
-        
-        //if( this.props.comment.data && !this.props.answer.data )
-            //this.props.dispatch( commentActions.getAllCommentsOfQuestion( this.props.answer, sortAlgorithms.orderDateGreater ) ); //revisar como sacar los comentarios
-        
-        console.log(this.props.comment);
         
         let comments = [];
         
@@ -121,7 +160,16 @@ class Question extends Component{
                 );
             }
         
+        
         let answers = [];
+        /*, commentError = '';
+        if(this.props.comment.data && this.props.comment.data.data && this.props.comment.data.data.description){
+            commentError = this.props.comment.data.data.description[0];
+            //this.props.dispatch( commentActions.getAllCommentsOfQuestion() );
+        }*/
+            
+        const {Comment} = this.state;
+        
         if( !this.props.answer.data )
             answers = this.props.answer.map((answer,i) => {
                 
@@ -145,11 +193,12 @@ class Question extends Component{
                                 <form onSubmit={this.handleSubmitComment}>
                                     <div className="form-group shadow-textarea">
                                         <label htmlFor="_comment"><small>Comments</small></label>
-                                        <textarea className="form-control z-depth-1" id="_comment" name="_comment" rows="3" placeholder="Write your comment here..."></textarea>
+                                        <textarea className="form-control z-depth-1" id={answer.id} name='_comment' value={(answer.id === Comment.answerId ? Comment.comment : '')} rows="3" placeholder="Write your comment here..." onChange={this.handleChange}></textarea>
                                     </div>
+                                    { Comment.submitted && this.state.commentError && <div>{this.state.commentError}</div> }
                                     <input type="hidden" id="_answer_id" name="_answer_id" value={answer.id} />
                                     <div className="txt-r">
-                                        <input type="submit" className="btn btn-success active" value="Submit comment!" />
+                                        <input type="submit" className="btn btn-success active" defaultValue="Submit comment!" />
                                     </div>
                                 </form>
                                 {comments[i]}
@@ -161,6 +210,8 @@ class Question extends Component{
             
             });
         
+        
+        const { newAnswer } = this.state;
         const { question } = this.props;
         let userQuestionId = 0;
         if( question.data.attributes )
@@ -190,7 +241,7 @@ class Question extends Component{
                         <form onSubmit={this.handleSubmitAnswer} className="p-4 container-form-2">
                             <div className="form-group shadow-textarea">
                                 <label htmlFor="_answer">New answer</label>
-                                <textarea className="form-control z-depth-1" id="_answer" name="_answer" rows="3" placeholder="Write your answer here..."></textarea>
+                                <textarea className="form-control z-depth-1" id="_answer" name="_answer" value={newAnswer} rows="3" placeholder="Write your answer here..."></textarea>
                             </div>
                             <div className="txt-r">
                                 <input type="submit" className="btn btn-success active" value="Submit Answer!" />

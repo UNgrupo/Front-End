@@ -23,8 +23,8 @@ import New_topic from './components/New_topic';
 import Questions from './components/Questions';
 import New_question from './components/New_question';
 import Question from './components/Question';
-/*
 import Profile from './components/Profile';
+/*
 import Settings_profile from './components/Settings_profile';
 import Activity from './components/Activity';
 import Stadistics from './components/Stadistics';
@@ -57,6 +57,7 @@ ReactDOM.render(
                 <Route exact strict path='/questions/:topic_id' component={Questions}/>
                 <Route exact strict path='/questions/new_question/:topic_id' component={New_question}/>
                 <Route exact strict path='/questions/:topic_id/:question_id' component={Question}/>
+                <Route path='/profile' component={Profile}/>
             </div>
         </BrowserRouter>
     </Provider>

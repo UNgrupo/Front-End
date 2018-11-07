@@ -34,9 +34,13 @@ class New_topic extends Component{
             name,
             subject_id: this.props.subject.id
         };
-
+        
         if( name )
             await this.props.dispatch( topicActions.addNew( newTopic ) );
+            
+        this.setState({
+            submitted: true
+        });
     }
     
     handleChange(e){
@@ -48,8 +52,8 @@ class New_topic extends Component{
     
     render(){
         
-        if( this.props.topic.success && this.state.submitted )
-            window.location.href = "/topics/" + this.props.subject.id;
+        //if( this.props.topic.success )
+            //window.location.href = "/topics/" + this.props.subject.id;
         
         const { name, submitted } = this.state;
         const { success, data } = this.props.topic;
@@ -71,7 +75,7 @@ class New_topic extends Component{
                             </div>
                             <div className="panel-body px-5">
                                 <form onSubmit={ this.handleSubmit } className="pt-3">
-                                    { submitted && !success && <div><big>{data}</big></div>}
+                                    { submitted && !success && <div><big>{data.data}</big></div>}
                                     <div className={'form-group' + ( submitted && ( !name || nameError ) ? ' has-error': '')}>
                                         <label htmlFor="name">Name:</label>
                                         <input type="text" className="form-control" id="name" name="name" value={name} onChange={this.handleChange}/>

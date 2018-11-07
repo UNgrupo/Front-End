@@ -1,7 +1,7 @@
-import api_route from '../route';
 import axios from 'axios';
 
-import authHeader from '../Auth-header.js';
+import authHeader from '../_helpers/Auth-header.js';
+import API_ROUTE from '../_helpers/Route-api';
 import Common from './actions-common';
 
 const element = 'users';
@@ -28,14 +28,14 @@ function login( user ){
         	}
         };
         document.body.classList.add('busy-cursor');
-        axios.post(api_route + 'user_token', data)
+        axios.post(API_ROUTE + 'user_token', data)
         .then(response => {
             console.log( response );
             const token = response.data;
             if( token && token.jwt ){
                 dispatch(success( 'Log success' ));
                 window.localStorage.setItem('user', JSON.stringify( token ));
-                getUserId( email, token );
+                getUserId( email );
             }
         })
         .catch(error => {
@@ -46,14 +46,13 @@ function login( user ){
     
     function success(user) { return { type: 'LOGIN-SUCCESS', data: user } }
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
-    function getUserId( email, token ){ 
+    function getUserId( email ){ 
         document.body.classList.add('busy-cursor'); 
-        axios.get(api_route + 'users.json', {headers: authHeader()})
+        axios.get(API_ROUTE + 'users', {headers: authHeader()})
         .then(response => {
             response.data.data.map( user => {
                 if(user.attributes.email === email){
                     window.localStorage.setItem('user-id', user.id);
-                    window.location.href = "/home";
                 }
                 return true;
             });  
@@ -83,7 +82,7 @@ function signUp(user){
         };
         
         document.body.classList.add('busy-cursor');
-        await axios.post(api_route + 'users', newUser)
+        await axios.post(API_ROUTE + 'users', newUser)
         .then(response => {
             dispatch(success('User added succesfully'));
             dispatch( login( user ) );
