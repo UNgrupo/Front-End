@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
@@ -10,20 +11,23 @@ import '../styles/Questions.css';
 
 class Questions extends Component {
   
-  async componentDidMount(){
+  componentDidMount(){
     
     const {topic_id} = this.props.match.params;
     
-    await this.props.dispatch( questionActions.getAllByForeanId( topic_id, 'topic') );
+    this.props.dispatch( questionActions.getAllByForeanId( topic_id, 'topic' ) );
     
-    await this.props.dispatch( userActions.getAll() );
+    this.props.dispatch( userActions.getAll() );
   }
   
   render() {
-    let questions = [];
     
+    let questions = [];
     if( !this.props.question.data && !this.props.user.data )
       questions = this.props.question.map((question, i) => {
+        
+        const username = this.props.user[question.attributes['user-id']-1].attributes.usern;
+        
         return (
           
           <div key={i} className="panel border-panel">
@@ -33,7 +37,7 @@ class Questions extends Component {
               </a>
               <div className="row">
                 <div className="col">
-                  <a href='#'>{this.props.user[question.attributes['user-id']-1].attributes.name}</a>
+                  <Link to={{ pathname: "/" + username}}>{username}</Link> {/*userLoggedProfile variable que dira si el usuario puede o no hacer cambios en el perfil*/}
                 </div>
                 <div className="col">
                   {question.attributes.date}

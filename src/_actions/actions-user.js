@@ -10,17 +10,54 @@ const commonActions = new Common(element);
 const userActions = {
     ...commonActions.getActions,
     login,
+    loginFacebook,
     logout,
     signUp,
+    getUserByUsername
 };
 
 export default userActions;
+
+function loginFacebook( token ){
+    return async dispatch => {
+        
+        document.body.classList.add('busy-cursor');
+        await axios.get(API_ROUTE + "auth/facebook/callback?code=" + token.accessToken )
+        .then(async resp => {
+            window.localStorage.setItem('user', JSON.stringify( {jwt: token.accessToken} ));
+            dispatch(success( 'Log success' ));
+            await getUserIdByEmail( token.email );
+        })
+        .catch(error =>{
+            dispatch( failure( "The facebook user is not registered din the page") );
+        });
+        document.body.classList.remove('busy-cursor');
+        
+    };
+    function success(user) { return { type: 'LOGIN-SUCCESS', data: user } }
+    function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
+    async function getUserIdByEmail( email ){
+        document.body.classList.add('busy-cursor');
+        await axios.get(API_ROUTE + 'users.json', {headers: authHeader()})
+        .then(response => {
+            response.data.data.map( user => {
+                if(user.attributes.email === email){
+                    window.localStorage.setItem('user-id', user.id);
+                }
+            });  
+        })
+        .catch(error => {
+            console.log(error.response);
+        });
+        document.body.classList.remove('busy-cursor');
+    }
+}
 
 function login( user ){
     
     const { email, password } = user;
     
-    return dispatch => {
+    return async dispatch => {
         const data = {
         	"auth": {
         		"email": email,
@@ -28,14 +65,13 @@ function login( user ){
         	}
         };
         document.body.classList.add('busy-cursor');
-        axios.post(API_ROUTE + 'user_token', data)
+        await axios.post(API_ROUTE + 'user_token', data)
         .then(response => {
-            console.log( response );
             const token = response.data;
             if( token && token.jwt ){
                 dispatch(success( 'Log success' ));
                 window.localStorage.setItem('user', JSON.stringify( token ));
-                getUserId( email );
+                getUserIdByEmail( email );
             }
         })
         .catch(error => {
@@ -46,26 +82,54 @@ function login( user ){
     
     function success(user) { return { type: 'LOGIN-SUCCESS', data: user } }
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
-    function getUserId( email ){ 
+    async function getUserIdByEmail( email ){
         document.body.classList.add('busy-cursor'); 
-        axios.get(API_ROUTE + 'users', {headers: authHeader()})
-        .then(response => {
-            response.data.data.map( user => {
+        await axios.get(API_ROUTE + 'users.json', {headers: authHeader()})
+        .then(async response => {
+            await response.data.data.map( user => {
                 if(user.attributes.email === email){
                     window.localStorage.setItem('user-id', user.id);
                 }
-                return true;
             });  
         })
         .catch(error => {
             console.log(error.response);
         });
+        console.log(window.localStorage);
         document.body.classList.remove('busy-cursor');
     }
 }
 
+function getUserByUsername( username ){
+    
+    let userExist = false;
+    
+    return async dispatch => {
+        document.body.classList.add('busy-cursor');
+        await axios.get(API_ROUTE + 'users.json', {headers: authHeader()})
+        .then(response => {
+            response.data.data.map( user => {
+                if(user.attributes.usern === username){
+                    dispatch( success( user ) );
+                    userExist = true;
+                }
+            });
+            if(!userExist)
+                dispatch( failure( 'The user doesnt exist' ) );
+        })
+        .catch(error => {
+            dispatch( failure( error.response ) );
+        });
+        document.body.classList.remove('busy-cursor');
+    };
+    
+    function success(user) { return { type: 'GET-USER-SUCCESS', data: user } }
+    function failure(error) { return { type: 'GET-USER-FAILURE', data: error } }
+}
+
 function logout(){
     window.localStorage.removeItem('user');
+    //window.localStorage.removeItem('user-id');
     return({
         type: 'LOGOUT-SUCCESS'
     });

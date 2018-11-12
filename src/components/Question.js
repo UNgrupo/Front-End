@@ -162,14 +162,7 @@ class Question extends Component{
         
         
         let answers = [];
-        /*, commentError = '';
-        if(this.props.comment.data && this.props.comment.data.data && this.props.comment.data.data.description){
-            commentError = this.props.comment.data.data.description[0];
-            //this.props.dispatch( commentActions.getAllCommentsOfQuestion() );
-        }*/
-            
         const {Comment} = this.state;
-        
         if( !this.props.answer.data )
             answers = this.props.answer.map((answer,i) => {
                 

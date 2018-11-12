@@ -10,7 +10,7 @@ const answerReducer = function( state = initial_state, action ){
         case 'GET-ANSWERS-SUCCESS':
             return data;
         case 'GET-ANSWERS-FAILURE':
-            return [];
+            return state;
         case 'GET-ANSWER-SUCCESS':
             return data;
         case 'GET-ANSWER-FAILURE':

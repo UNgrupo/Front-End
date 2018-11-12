@@ -21,18 +21,23 @@ class Statistics extends Component {
   
   componentDidMount(){
     
-    const {dispatch} = this.props;
+    const {dispatch, comment, question, answer, load} = this.props;
     const userId = window.localStorage.getItem( 'user-id' );
     
-    dispatch( statisticActions.getById( userId ) );
-    dispatch( questionActions.getAllByForeanId( userId, 'user' ) );
-    dispatch( answerActions.getAllByForeanId( userId, 'user' ) );
-    dispatch( commentActions.getAllByForeanId( userId, 'user' ) );
+    dispatch( statisticActions.getById( this.props.user.id ) );
+    
+    console.log( this.props.user );
+    
+    if( (answer.data || question.data || comment.data || !answer.success || !answer.success || !answer.success) && load){
+      dispatch( questionActions.getAllByForeanId( userId, 'user' ) );
+      dispatch( answerActions.getAllByForeanId( userId, 'user' ) );
+      dispatch( commentActions.getAllByForeanId( userId, 'user' ) ); 
+    }
   }
   
   downloadStatisticsPdf(){
-    var element = document.getElementById('statisticsPdf');
-    var opt = {
+    const element = document.getElementById('statisticsPdf');
+    const opt = {
       margin:       1,
       filename:     this.props.user.usern + 'Statistics.pdf',
       image:        { type: 'jpeg', quality: 0.98 },
@@ -83,7 +88,7 @@ class Statistics extends Component {
                 style={{ axis: { stroke: 'black' },
                   axisLabel: { fontSize: 20 },
                   ticks: { stroke: "grey", size: 5 },
-                  tickLabels: { fontSize: 10, padding: 1, angle:45, verticalAnchor: "middle", textAnchor:'start' }
+                  tickLabels: { fontSize: 8, padding: 1, angle:45, verticalAnchor: "middle", textAnchor:'start' }
                 }}
               />
               
@@ -91,7 +96,7 @@ class Statistics extends Component {
                 style={{ axis: { stroke: 'black' },
                   axisLabel: { fontSize: 20 },
                   ticks: { stroke: "grey", size: 5 },
-                  tickLabels: { fontSize: 10, padding: 1}
+                  tickLabels: { fontSize: 8, padding: 1}
                 }}
               />
               
@@ -107,12 +112,14 @@ class Statistics extends Component {
       });
     }
     
+    const { user } = this.props
+    
     return (
       <div>
         <div className='panel' id='statisticsPdf'>
-          <h1 className='text-center my-3 py-3'>Statistics of {this.props.user.usern}</h1>
+          <h1 className='text-center my-3 py-3'>Statistics of {user.attributes.usern}</h1>
           <p className='px-5 mx-5'>
-            This are the statistics of the user {this.props.user.usern} with name {this.props.user.name}, 
+            This are the statistics of the user {user.attributes.usern} with name {user.attributes.name}, 
             to download this statistics in pdf format click the button at the end of the page
           </p>
           <div className='row'>
@@ -160,8 +167,9 @@ class Statistics extends Component {
 }
 
 function mapStateToProps( state ){
-  const {statistic, question, answer, comment} = state;
+  const {user, statistic, question, answer, comment} = state;
   return {
+    user,
     statistic,
     question,
     answer, 

@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import axios from 'axios';
-
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 
 import Footer from './Footer.js';
 import userActions from '../_actions/actions-user.js';
-import API_ROUTE from '../_helpers/Route-api';
 
 import '../styles/Log_in-Sign_up.css';
 
@@ -17,7 +14,8 @@ class Log_in extends Component {
   constructor(props){
         super(props);
         
-        this.props.dispatch(userActions.logout());
+        if( !this.props.authentication.logged_in )
+          this.props.dispatch(userActions.logout());
         
         this.state = {
             email: '',
@@ -58,18 +56,8 @@ class Log_in extends Component {
     });
   }
   
-  responseFacebook(response) {
-    console.log(response);
-      //axios.post(api_route + "auth/facebook/callback", response.accessToken)
-      axios.post(API_ROUTE + "auth/facebook/callback", "EAAcHUD0uslQBAClJfk1THiEsecflqLJcD5iLPZASErfZA7N3REvTkCAJVgZB7aSMhXb5rYC9ewHYp5fy00dXne8p9aZCkp80ZBMRHoXtsvBRYkZBZCNxmQAuiafchLfLDFtvaxH7coORe8ZCEEJJNH4juICyJZAN8bzodZBKRG8NIWvnSMu0Fm4ZBJ6ORZAz8XQE8dIZD" )
-      .then(response => {
-        console.log( response );
-        console.log( "hola" );
-      })
-      .catch(error =>{
-        console.log(error.response);
-        //window.location = "http://m.facebook.com/logout.php?confirm=1&next=https://front-ungrupo-caenietoba.c9users.io";
-      });
+  responseFacebook( response ){
+    this.props.dispatch( userActions.loginFacebook( response ) ); //revisar como hacer para que solo ingrese cuadno se le pide oprimiendo el boton
   }
   
   render() {
@@ -82,7 +70,7 @@ class Log_in extends Component {
     };
       
     if( this.props.authentication.logged_in )
-      window.location.href = "/home";
+      window.location.href = "/home"; 
       
     return (
       

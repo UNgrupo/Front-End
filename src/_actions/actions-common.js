@@ -14,9 +14,9 @@ class Common {
         const getAll = () => {
             const auxElement = this.element.toUpperCase();
         
-            return dispatch => {
+            return async dispatch => {
                 document.body.classList.add('busy-cursor');
-                axios.get(API_ROUTE + (this.element === 'users' ? 'users.json' : this.element), {headers: authHeader()})
+                await axios.get(API_ROUTE + (this.element === 'users' ? 'users.json' : this.element), {headers: authHeader()})
                 .then(response => {
                     console.log(response);
                     dispatch( success( response.data.data ) );
@@ -35,9 +35,9 @@ class Common {
             
             const auxElement = this.element.toUpperCase();
             
-            return dispatch => {
+            return async dispatch => {
                 document.body.classList.add('busy-cursor');
-                axios.get(API_ROUTE + this.element, {headers: authHeader()})
+                await axios.get(API_ROUTE + this.element, {headers: authHeader()})
                 .then(response => {
                     const resAnswers = response.data.data;
                     var answers = [];
@@ -62,9 +62,9 @@ class Common {
         
             const auxElement = this.element.slice(0, -1).toUpperCase();
             
-            return dispatch => {
+            return async dispatch => {
                 document.body.classList.add('busy-cursor');
-                axios.get(API_ROUTE + this.element + '/' + id, {headers: authHeader()})
+                await axios.get(API_ROUTE + this.element + '/' + id, {headers: authHeader()})
                 .then(response => {
                     dispatch( success( response.data.data ) );
                 })
@@ -83,9 +83,9 @@ class Common {
             const auxElement = this.element.slice(0, -1).toUpperCase();
             const capitalizedAuxElement = auxElement.charAt(0).toUpperCase() + auxElement.slice(1);
             
-            return dispatch => {
+            return async dispatch => {
                 document.body.classList.add('busy-cursor');
-                axios.post(API_ROUTE + this.element, objectToAdd, {headers: authHeader()})
+                await axios.post(API_ROUTE + this.element, objectToAdd, {headers: authHeader()})
                 .then(response => {
                     dispatch( success( capitalizedAuxElement + ' added' ) );
                 })
@@ -104,9 +104,9 @@ class Common {
             const auxElement = this.element.slice(0, -1).toUpperCase();
             const capitalizedAuxElement = auxElement.charAt(0).toUpperCase() + auxElement.slice(1);
             
-            return dispatch => {
+            return async dispatch => {
                 document.body.classList.add('busy-cursor');
-                axios.delete(API_ROUTE + this.element + '/' + id, {headers: authHeader()})
+                await axios.delete(API_ROUTE + this.element + '/' + id, {headers: authHeader()})
                 .then(response => {
                     dispatch( success( capitalizedAuxElement + ' deleted' ) );
                 })
@@ -122,17 +122,12 @@ class Common {
         
         const update = (id, data) => {
             
-            const elementSingular = this.element.slice(0, -1);
             const auxElement = this.element.slice(0, -1).toUpperCase();
             const capitalizedAuxElement = auxElement.charAt(0).toUpperCase() + auxElement.slice(1);
             
-            const jsonData = {
-                elementSingular: data
-            };
-            
-            return dispatch => {
+            return async dispatch => {
                 document.body.classList.add('busy-cursor');
-                axios.put(API_ROUTE + this.element + '/' + id , jsonData, {headers: authHeader()})
+                await axios.patch(API_ROUTE + this.element + '/' + id , data, {headers: authHeader()})
                 .then(response => {
                     dispatch( success( capitalizedAuxElement + ' updated' ) );
                 })
