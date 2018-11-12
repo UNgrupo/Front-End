@@ -14,6 +14,8 @@ class Home extends Component {
   
   render() {
     
+    console.log( window.localStorage );
+    
     let subjects = [];
     
     if( !this.props.subject.data )

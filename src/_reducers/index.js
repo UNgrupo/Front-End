@@ -7,6 +7,7 @@ import answerReducer from './reducer-answer';
 import commentReducer from './reducer-comment';
 import subjectReducer from './reducer-subject';
 import topicReducer from './reducer-topic';
+import statisticReducer from './reducer-statistic';
 
 const allReducers = combineReducers({
     user: userReducer,
@@ -15,7 +16,8 @@ const allReducers = combineReducers({
     answer: answerReducer,
     comment: commentReducer,
     subject: subjectReducer,
-    topic: topicReducer
+    topic: topicReducer,
+    statistic: statisticReducer
 });
 
 export default allReducers;

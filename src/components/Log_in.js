@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import axios from 'axios';
-import api_route from '../route';
-
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 
@@ -17,7 +14,8 @@ class Log_in extends Component {
   constructor(props){
         super(props);
         
-        this.props.dispatch(userActions.logout());
+        if( !this.props.authentication.logged_in )
+          this.props.dispatch(userActions.logout());
         
         this.state = {
             email: '',
@@ -29,7 +27,7 @@ class Log_in extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.responseFacebook = this.responseFacebook.bind(this);
     }
-    
+  
   async handleSubmit(e){
     
     e.preventDefault();
@@ -58,16 +56,8 @@ class Log_in extends Component {
     });
   }
   
-  responseFacebook(response) {
-    console.log(response);
-      axios.post(api_route + "auth/facebook/callback", response.accessToken)
-      .then(response => {
-        console.log( response );
-      })
-      .catch(error =>{
-        console.log(error.response);
-        //window.location = "http://m.facebook.com/logout.php?confirm=1&next=https://front-ungrupo-caenietoba.c9users.io";
-      });
+  responseFacebook( response ){
+    this.props.dispatch( userActions.loginFacebook( response ) ); //revisar como hacer para que solo ingrese cuadno se le pide oprimiendo el boton
   }
   
   render() {
@@ -78,18 +68,9 @@ class Log_in extends Component {
     const responseGoogle = (response) => {
       
     };
-  
-    const responseFacebook = (response) => {
-      console.log(response);
-      axios.post(api_route + "auth/facebook/callback", response.accessToken)
-      .then(response => {
-        console.log( response );
-      })
-      .catch(error =>{
-        console.log(error.response);
-        window.location = "http://m.facebook.com/logout.php?confirm=1&next=https://front-ungrupo-caenietoba.c9users.io"
-      });
-    };
+      
+    if( this.props.authentication.logged_in )
+      window.location.href = "/home"; 
       
     return (
       

@@ -1,0 +1,8 @@
+.no-decoration{
+    text-decoration: none;
+    color: black;
+}
+
+.border-solid{
+    border: 0.5px solid lightgrey;
+}

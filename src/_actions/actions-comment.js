@@ -1,8 +1,8 @@
 import Common from './actions-common';
 import axios from 'axios';
 
-import authHeader from '../Auth-header.js';
-import api_route from '../route';
+import authHeader from '../_helpers/Auth-header.js';
+import API_ROUTE from '../_helpers/Route-api';
 
 const element = 'comments';
 const commonActions = new Common(element);
@@ -14,12 +14,12 @@ const commentActions = {
 
 export default commentActions;
 
-function getAllCommentsOfQuestion(  ){
+function getAllCommentsOfQuestion(){
     return dispatch => {
         document.body.classList.add('busy-cursor');
-        axios.get(api_route + 'comments', {headers: authHeader()})
+        axios.get(API_ROUTE + 'comments', {headers: authHeader()})
         .then(response => {
-            axios.get(api_route + 'answers', {headers: authHeader()})
+            axios.get(API_ROUTE + 'answers', {headers: authHeader()})
             .then(responseAnswers => {
                 let comments = [];
                 const resComments = response.data.data;
@@ -37,19 +37,6 @@ function getAllCommentsOfQuestion(  ){
             .catch(error => {
                 dispatch( failure( error.message ) );
             });
-            /*
-            let comments = [];
-            const resComments = response.data.data;
-            for(let i=0; i<answers.length; i++){
-                let comments_i = [];
-                for(let j=0; j<resComments.length; j++){
-                    if(answers[i].id.toString() === resComments[j].attributes['answer-id'].toString())
-                        comments_i.push(resComments[j]);
-                }
-                comments.push(comments_i);
-            }
-            comments.sort(sortFunction);
-            dispatch( success( comments ) );*/
         })
         .catch(error => {
             dispatch( failure( error.message ) );
