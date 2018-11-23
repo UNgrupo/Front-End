@@ -1,6 +1,7 @@
 const initial_state = {
     logged_in: false,
-    data: Object
+    data: Object,
+    loginSocial: false
 }
 
 const authenticationReducer = function(state = initial_state, action){
@@ -11,6 +12,12 @@ const authenticationReducer = function(state = initial_state, action){
             return({
                 logged_in: true,
                 data
+            });
+        case 'LOGIN-SUCCESS-SOCIAL':
+            return({
+                logged_in: true,
+                data,
+                loginSocial: true
             });
         case 'LOGIN-FAILURE':
             return({

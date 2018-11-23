@@ -63,13 +63,13 @@ class Log_in extends Component {
   render() {
     
     const {submitted, email, password} = this.state;
-    const { data, logged_in } = this.props.authentication;
+    const { data, logged_in, loginSocial } = this.props.authentication;
       
     const responseGoogle = (response) => {
       
     };
       
-    if( this.props.authentication.logged_in )
+    if( logged_in && !loginSocial )
       window.location.href = "/home"; 
       
     return (

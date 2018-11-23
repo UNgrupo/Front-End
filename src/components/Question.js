@@ -92,7 +92,7 @@ class Question extends Component{
         
         await this.props.dispatch( commentActions.getAllCommentsOfQuestion() );
         
-        window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
+        //window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
     }
     
     handleSubmitAnswer(e){
@@ -194,7 +194,7 @@ class Question extends Component{
                                         <input type="submit" className="btn btn-success active" defaultValue="Submit comment!" />
                                     </div>
                                 </form>
-                                {comments[i]}
+                                {comments[answer.id-1]}
                             </div>
                         </div>
                     );
