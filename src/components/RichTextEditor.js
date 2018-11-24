@@ -44,7 +44,7 @@ const isCodeHotkey = isKeyHotkey('mod+`');
  * @type {Component}
  */
 
-class Rich_text_editor extends React.Component {
+class RichTextEditor extends React.Component {
   /**
    * Deserialize the initial editor value.
    *
@@ -64,7 +64,7 @@ class Rich_text_editor extends React.Component {
 
   hasMark = type => {
     const { value } = this.state;
-    return value.activeMarks.some(mark => mark.type == type);
+    return value.activeMarks.some(mark => mark.type === type);
   }
 
   /**
@@ -76,7 +76,7 @@ class Rich_text_editor extends React.Component {
 
   hasBlock = type => {
     const { value } = this.state;
-    return value.blocks.some(node => node.type == type);
+    return value.blocks.some(node => node.type === type);
   }
 
   /**
@@ -114,9 +114,8 @@ class Rich_text_editor extends React.Component {
           </div>
         </div>
         <Editor
-          className='mx-5 py-3'
+          className='mx-5 py-3 mb-3'
           spellCheck
-          autoFocus
           placeholder="Write your text here..."
           ref={this.ref}
           value={this.state.value}
@@ -142,10 +141,9 @@ class Rich_text_editor extends React.Component {
 
     return (
       <button
-        active={isActive}
         onMouseDown={event => this.onClickMark(event, type)}
-        className='bg-light'
-        type="button"
+        className={'bg-light ' + (isActive ? "border-1": 'border-0')}
+        type = 'button'
       >
       
       <img title={type} alt={type} src={icon} className="text-option-icon"/>
@@ -176,9 +174,8 @@ class Rich_text_editor extends React.Component {
 
     return (
       <button
-        active={isActive}
         onMouseDown={event => this.onClickBlock(event, type)}
-        className='bg-light'
+        className={'bg-light ' + (isActive ? "border-1": 'border-0')}
         type="button"
       >
       
@@ -247,7 +244,7 @@ class Rich_text_editor extends React.Component {
    */
 
   onChange = ({ value }) => {
-    if (value.document != this.state.value.document) 
+    if (value.document !== this.state.value.document) 
       this.props.handleTextEditorChange(value.toJSON());
     this.setState({ value });
   }
@@ -306,7 +303,7 @@ class Rich_text_editor extends React.Component {
     const { document } = value;
 
     // Handle everything but list buttons.
-    if (type != 'bulleted-list' && type != 'numbered-list') {
+    if (type !== 'bulleted-list' && type !== 'numbered-list') {
       const isActive = this.hasBlock(type);
       const isList = this.hasBlock('list-item');
 
@@ -322,7 +319,7 @@ class Rich_text_editor extends React.Component {
       // Handle the extra wrapping required for list buttons.
       const isList = this.hasBlock('list-item');
       const isType = value.blocks.some(block => {
-        return !!document.getClosest(block.key, parent => parent.type == type);
+        return !!document.getClosest(block.key, parent => parent.type === type);
       });
 
       if (isList && isType) {
@@ -333,7 +330,7 @@ class Rich_text_editor extends React.Component {
       } else if (isList) {
         editor
           .unwrapBlock(
-            type == 'bulleted-list' ? 'numbered-list' : 'bulleted-list'
+            type === 'bulleted-list' ? 'numbered-list' : 'bulleted-list'
           )
           .wrapBlock(type);
       } else {
@@ -347,4 +344,4 @@ class Rich_text_editor extends React.Component {
  * Export.
  */
 
-export default Rich_text_editor
+export default RichTextEditor

@@ -10,6 +10,7 @@ import isActualUser from '../_helpers/Is-actual-user';
 import Statistics from './Statistics';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Loading from './Loading.js';
 
 import '../styles/Profile.css';
 
@@ -22,7 +23,8 @@ class Profile extends Component {
         
         this.state = {
             activeTab: 'basicInfo-tab',
-            isUserLogged: false
+            isUserLogged: false,
+            isDataLoaded: false
         };
         
         this.changeTab = this.changeTab.bind(this);
@@ -43,6 +45,8 @@ class Profile extends Component {
         await dispatch( questionActions.getAllByForeanId( this.props.user.id, 'user' ) );
         await dispatch( answerActions.getAllByForeanId( this.props.user.id, 'user' ) );
         await dispatch( commentActions.getAllByForeanId( this.props.user.id, 'user' ) );
+
+        this.setState( {isDataLoaded: true} );
     }
     
     updatePhoto(e){
@@ -60,6 +64,9 @@ class Profile extends Component {
     }
   
   render() {
+
+    if( !this.state.isDataLoaded )
+        return <Loading />
       
       const infoUser = [['usern', 'Username'], ['name', 'Full name'], ['email', 'Email'], ['role', 'Role'], ['reputation', 'Reputation'], ['level', 'Level']];
       let attribUser;

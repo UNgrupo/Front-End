@@ -45,6 +45,7 @@ function loginFacebook( token ){
                 if(user.attributes.email === token.email){
                     window.localStorage.setItem('user', JSON.stringify({...user, jwt: token.accessToken }));
                 }
+                return null;
             });  
         })
         .catch(error => {
@@ -93,6 +94,7 @@ function login( user ){
                     //window.localStorage.setItem('user-id', user.id);
                     window.localStorage.setItem('user', JSON.stringify({...user, ...token}));
                 }
+                return null;
             });  
         })
         .catch(error => {
@@ -116,6 +118,7 @@ function getUserByUsername( username ){
                     dispatch( success( user ) );
                     userExist = true;
                 }
+                return null;
             });
             if(!userExist)
                 dispatch( failure( 'The user doesnt exist' ) );

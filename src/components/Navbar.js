@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
 
 import '../styles/Navbar.css';
 import Profile_icon from '../resources/Profile.png';
@@ -38,9 +36,9 @@ class Navbar extends Component {
             <ul className="navbar-nav mr-auto">
               <li className="nav-item active">
                 
-                <Link className='nav-link' to={{ pathname: this.state.username }}>
+                <a href={'/' + this.state.username} className="nav-link">
                   <img className="img-nav" src={Profile_icon} alt="Profile" title="Profile" />
-                </Link>
+                </a>
               </li>
               <li className="nav-item active">
                 <a className="nav-link" href="/"><img className="img-nav" src={Sign_out} alt="Sign out" title="Sign out" /></a>

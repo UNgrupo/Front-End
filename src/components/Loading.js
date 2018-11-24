@@ -7,10 +7,10 @@ export default class Loading extends Component {
     render(){
         
         return (
-            <div class="container">
-                <div class='loading-container'>
-                  <h1 class='d-flex justify-content-center loading-title'>Loading</h1>
-                  <div class='d-flex justify-content-center loading-title'>
+            <div className="container">
+                <div className='loading-container'>
+                  <h1 className='d-flex justify-content-center loading-title'>Loading</h1>
+                  <div className='d-flex justify-content-center loading-title'>
                     <img src="https://thumbs.gfycat.com/CrazyAlienatedDrafthorse-size_restricted.gif" alt="Loading Icon" width="400" height="400" /> 
                   </div>
                 </div>

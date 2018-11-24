@@ -4,7 +4,7 @@ import { Editor } from 'slate-react';
 import Plain from 'slate-plain-serializer';
 import { Value } from 'slate';
 
-export default class Show_text extends React.Component {
+export default class ShowText extends React.Component {
   
   renderNode = (props, editor, next) => {
     const { attributes, children, node } = props;

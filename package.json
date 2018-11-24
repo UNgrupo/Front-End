@@ -10,6 +10,7 @@
     "emoji-mart": "^2.9.1",
     "html2pdf.js": "^0.9.1",
     "immutable": "^4.0.0-rc.12",
+    "is-hotkey": "^0.1.4",
     "react": "^16.5.2",
     "react-bootstrap": "^0.32.4",
     "react-dom": "^16.5.2",

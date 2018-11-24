@@ -60,8 +60,6 @@ class New_question extends Component {
   
   render() {
     
-    console.log( this.props.question );
-    
     if( this.props.question.success && this.state.submitted ){
       window.location.href = "/questions/" + this.props.topic.id;
     }
