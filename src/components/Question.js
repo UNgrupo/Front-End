@@ -3,6 +3,10 @@ import { connect } from 'react-redux';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
+import Rich_text_editor from './Rich_text_editor.js';
+import Show_text from './Show_text.js';
+import Loading from './Loading.js';
+
 import sortAlgorithms from '../scripts/orderData';
 import userActions from '../_actions/actions-user';
 import questionActions from '../_actions/actions-question';
@@ -28,7 +32,8 @@ class Question extends Component{
                 answerId: 0, 
                 comment: ''
             },
-            commentError: ''
+            commentError: '',
+            shouldUpdate: false
         };
         
         this.handleClickUp = this.handleClickUp.bind(this);
@@ -36,10 +41,13 @@ class Question extends Component{
         this.handleClick = this.handleClick.bind(this);
         this.handleSubmitComment = this.handleSubmitComment.bind(this);
         this.handleSubmitAnswer = this.handleSubmitAnswer.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleCommentChange = this.handleCommentChange.bind(this);
+        this.handleAnswerChange = this.handleAnswerChange.bind(this);
     }
     
     async componentDidMount(){
+        //this.setState({shouldUpdate: false});
+        
           const {question_id} = this.props.match.params;
           const {dispatch} = this.props;
           
@@ -50,6 +58,8 @@ class Question extends Component{
           await dispatch( answerActions.getAllByForeanId( question_id, 'question', sortAlgorithms.orderQualificationGreater ) );
           
           await dispatch( commentActions.getAllCommentsOfQuestion() );
+          
+        this.setState({shouldUpdate: true});
     }
     
     async handleClick(answer, number){ 
@@ -70,12 +80,28 @@ class Question extends Component{
         this.handleClick(answer, -1);
     }
     
+    handleCommentChange(text){
+        this.setState({
+            Comment: { 
+                comment: text
+            }
+        });
+    }
+    
+    handleAnswerChange(text){
+        this.setState({
+            Answer: { 
+                answer: text
+            }
+        });
+    }
+    
     async handleSubmitComment(e){
         
         e.preventDefault();
         
         const data = {
-            description: e.target.elements._comment.value,
+            description: JSON.stringify(this.state.Comment.comment),
             date: (new Date()).toUTCString(),
             user_id: window.localStorage.getItem( 'user-id' ),
             answer_id: e.target.elements._answer_id.value
@@ -92,15 +118,14 @@ class Question extends Component{
         
         await this.props.dispatch( commentActions.getAllCommentsOfQuestion() );
         
-        //window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
     }
     
-    handleSubmitAnswer(e){
+    async handleSubmitAnswer(e){
         
         e.preventDefault();
         
         const data = {
-            description: e.target.elements._answer.value,
+            description: JSON.stringify(this.state.Answer.answer),
             qualification: 0,
             date: (new Date()).toUTCString(),
             user_id: window.localStorage.getItem( 'user-id' ),
@@ -113,30 +138,16 @@ class Question extends Component{
             Answer: { submitted: true }
         });
         
-        window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
-    }
-    
-    handleChange(e){
-        const {name, value, id} = e.target;
+        const {question_id} = this.props.match.params;
+        await this.props.dispatch( answerActions.getAllByForeanId( question_id, 'question', sortAlgorithms.orderQualificationGreater ) );
         
-        if(name === '_comment')
-            this.setState({
-                Comment: { 
-                    comment: value, 
-                    answerId: id,
-                    submitted: false 
-                }
-            });
-        else if( name === '_answer' )
-            this.setState({
-                Answer: { 
-                    answer: value, 
-                    submitted: false 
-                }
-            });
+        //window.location.href = "/questions/"+this.props.match.params.topic_id+'/'+this.props.match.params.question_id;
     }
     
     render(){
+        
+        if( !this.state.shouldUpdate )
+            return <Loading />
         
         let comments = [];
         
@@ -146,13 +157,14 @@ class Question extends Component{
                     this.props.comment[i].map(comment => {
                         const userComment = this.props.user[comment.attributes['user-id']-1].attributes;
                         return(
-                            <div key={comment.id} className="media p-3 container-form-comment mb-1 mt-1"> 
-                                <img src={userComment.photo} alt={userComment.name} className="mr-3 mt-3 rounded-circle" />
+                            <div key={comment.id} className="media p-3 container-form-comment my-1"> 
+                                <img src={/*userComment.photo*/'https://source.unsplash.com/random/75x75?sig=' + this.props.user[comment.attributes['user-id']-1].id} alt={userComment.name} className="mr-3 mt-3 rounded-circle" />
                                 <div className="media-body">
-                                    <h4>{userComment.name + "    "}      
-                                        <small><i>{comment.attributes.date}</i></small>
+                                    <h4>{userComment.usern}      
+                                        <small><i className='mx-3'>{comment.attributes.date}</i></small>
                                     </h4>
-                                    <p>{comment.attributes.description}</p>
+                                    
+                                    <Show_text value={comment.attributes.description}/>
                                 </div>
                             </div>
                         );
@@ -172,26 +184,23 @@ class Question extends Component{
                     
                     return(
                         <div key={answer.id} className="media p-3 container-form-2"> 
-                            <img src={userAnswer.photo} alt={userAnswer.name} className="mr-3 mt-3 rounded-circle" />
+                            <img src={/*userAnswer.photo*/'https://source.unsplash.com/random/150x150?sig=' + this.props.user[answer.attributes['user-id']-1].id} alt={userAnswer.name} className="mr-3 mt-3 rounded-circle" />
                             <div className="media-body">
-                                <h4>{userAnswer.name + "    "}      
-                                    <small><i>{answer.attributes.date}</i></small>
+                                <h4>{userAnswer.usern}      
+                                    <small><i className='mx-3'>{answer.attributes.date}</i></small>
                                 </h4>
-                                <p>{answer.attributes.description}</p>
+                                <Show_text value={answer.attributes.description} />
                                 <div className="row txt-r">
                                     <p className="pr-2">Qualification: {answer.attributes.qualification}</p>
                                     <input type="image" alt="Thumb up" src={Thumb_up} className="image-like" value={[answer.id, answer.attributes.qualification]} onClick={this.handleClickUp} />
                                     <input type="image" alt="Thumb down" src={Thumb_down} className="image-like" value={[answer.id, answer.attributes.qualification]} onClick={this.handleClickDown} />
                                 </div>
                                 <form onSubmit={this.handleSubmitComment}>
-                                    <div className="form-group shadow-textarea">
-                                        <label htmlFor="_comment"><small>Comments</small></label>
-                                        <textarea className="form-control z-depth-1" id={answer.id} name='_comment' value={(answer.id === Comment.answerId ? Comment.comment : '')} rows="3" placeholder="Write your comment here..." onChange={this.handleChange}></textarea>
-                                    </div>
+                                    <Rich_text_editor handleTextEditorChange={this.handleCommentChange}/>  
                                     { Comment.submitted && this.state.commentError && <div>{this.state.commentError}</div> }
-                                    <input type="hidden" id="_answer_id" name="_answer_id" value={answer.id} />
-                                    <div className="txt-r">
-                                        <input type="submit" className="btn btn-success active" defaultValue="Submit comment!" />
+                                    <input type="hidden" id="_answer_id" name="_answer_id" value={answer.id} /*ASi pasamos el id*/ />
+                                    <div className="txt-r mb-3">
+                                        <input type="submit" className="btn btn-success active" value="Submit comment!" />
                                     </div>
                                 </form>
                                 {comments[answer.id-1]}
@@ -203,29 +212,30 @@ class Question extends Component{
             
             });
         
-        
-        const { newAnswer } = this.state;
         const { question } = this.props;
         let userQuestionId = 0;
         if( question.data.attributes )
             userQuestionId = this.props.question.data.attributes['user-id'];
         
         return(
+            this.state.shouldUpdate &&
             <div>
-            
+                
                 <Navbar />
                 
                 <div className="container">
+                
                     <div className="px-5 mx-5">
                         <h2 className="text-center my-5">{(question.data.attributes ? question.data.attributes.title : '')}</h2>
                         
                         <div className="media p-3 container-form-comment mb-1 mt-1"> 
-                            <img src={(this.props.user[userQuestionId] ? this.props.user[userQuestionId].attributes.photo : '')} alt={(this.props.user[userQuestionId] ? this.props.user[userQuestionId].attributes.name : '')} className="mr-3 mt-3 rounded-circle" />
+                            <img src={(this.props.user[userQuestionId] ? /*this.props.user[userQuestionId].attributes.photo*/'https://source.unsplash.com/random/150x150' : '')} alt={(this.props.user[userQuestionId] ? this.props.user[userQuestionId].attributes.name : '')} className="mr-3 mt-3 rounded-circle" />
                             <div className="media-body">
-                                <h4>{(this.props.user[userQuestionId] ? this.props.user[userQuestionId].attributes.name : '') + "    "}      
-                                    <small><i>{(question.data.attributes ? question.data.attributes.date : '')}</i></small>
+                                <h4>{(this.props.user[userQuestionId] ? this.props.user[userQuestionId].attributes.usern : '')}      
+                                    <small><i className='mx-3'>{(question.data.attributes ? question.data.attributes.date : '')}</i></small>
                                 </h4>
-                                <p>{(question.data.attributes ? question.data.attributes.description : '')}</p>
+                                
+                                <Show_text value={question.data.attributes.description} />
                             </div>
                         </div>
                         
@@ -234,7 +244,7 @@ class Question extends Component{
                         <form onSubmit={this.handleSubmitAnswer} className="p-4 container-form-2">
                             <div className="form-group shadow-textarea">
                                 <label htmlFor="_answer">New answer</label>
-                                <textarea className="form-control z-depth-1" id="_answer" name="_answer" value={newAnswer} rows="3" placeholder="Write your answer here..."></textarea>
+                                <Rich_text_editor handleTextEditorChange={this.handleAnswerChange}/>
                             </div>
                             <div className="txt-r">
                                 <input type="submit" className="btn btn-success active" value="Submit Answer!" />
