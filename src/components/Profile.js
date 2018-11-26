@@ -5,10 +5,12 @@ import userActions from '../_actions/actions-user';
 import questionActions from '../_actions/actions-question';
 import commentActions from '../_actions/actions-comment';
 import answerActions from '../_actions/actions-answer';
+import isActualUser from '../_helpers/Is-actual-user';
 
 import Statistics from './Statistics';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Loading from './Loading.js';
 
 import '../styles/Profile.css';
 
@@ -21,7 +23,8 @@ class Profile extends Component {
         
         this.state = {
             activeTab: 'basicInfo-tab',
-            isUserLogged: false
+            isUserLogged: false,
+            isDataLoaded: false
         };
         
         this.changeTab = this.changeTab.bind(this);
@@ -32,15 +35,18 @@ class Profile extends Component {
     async componentDidMount(){
         const { dispatch } = this.props;
         const { username } = this.props.match.params;
-        const userId = window.localStorage.getItem( 'user-id' );
+        //const userId = window.localStorage.getItem( 'user-id' );
         
         await dispatch( userActions.getUserByUsername( username ) );
         this.setState({
-            isUserLogged: ( this.props.user.id === userId )
+            //isUserLogged: ( this.props.user.id === userId ),
+            isUserLogged: isActualUser( this.props.user.id )
         });
         await dispatch( questionActions.getAllByForeanId( this.props.user.id, 'user' ) );
         await dispatch( answerActions.getAllByForeanId( this.props.user.id, 'user' ) );
         await dispatch( commentActions.getAllByForeanId( this.props.user.id, 'user' ) );
+
+        this.setState( {isDataLoaded: true} );
     }
     
     updatePhoto(e){
@@ -58,6 +64,9 @@ class Profile extends Component {
     }
   
   render() {
+
+    if( !this.state.isDataLoaded )
+        return <Loading />
       
       const infoUser = [['usern', 'Username'], ['name', 'Full name'], ['email', 'Email'], ['role', 'Role'], ['reputation', 'Reputation'], ['level', 'Level']];
       let attribUser;
@@ -79,9 +88,8 @@ class Profile extends Component {
         });
       }
       
-      let { user, question, answer, comment } = this.props;
+      let { question, answer, comment } = this.props;
       if( this.props.user.attributes ){
-           user = this.props.user.attributes;
            question = this.props.question;
            answer = this.props.answer;
            comment = this.props.comment;
@@ -127,9 +135,8 @@ class Profile extends Component {
                     </div>
                 );
           });
-      
-      const { isUserLogged } = this.state;
-      const hide = ( !isUserLogged ? ' d-none' : '')
+          
+      const hide = ( !this.state.isUserLogged ? ' d-none' : '');
       
     return (
         <div>

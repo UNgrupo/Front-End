@@ -10,8 +10,9 @@ class Card extends Component{
                 <div className="card-header">
                   <h4>{this.props.title.toUpperCase()}</h4>
                 </div>
-                <div className="card-body">
-                  <p>{this.props.description}.</p>
+                <div>
+                  <img src={'https://source.unsplash.com/random?sig=' + Math.floor((Math.random() * 100) + 1)} width='100%' height='200' alt='card'/> 
+                  <p className='mt-1'>{this.props.description}.</p>
                 </div>
                 <div className="card-footer">
                   <a href={this.props.route}>

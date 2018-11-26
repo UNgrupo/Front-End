@@ -1,26 +1,40 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
+import Loading from './Loading.js';
+
 import questionActions from '../_actions/actions-question';
 import userActions from '../_actions/actions-user';
 
 import '../styles/Questions.css';
 
 class Questions extends Component {
+
+  constructor(props){
+      super(props);
+
+      this.state = {
+        isDataLoaded: false
+      }
+  }
   
-  componentDidMount(){
+  async componentDidMount(){
     
     const {topic_id} = this.props.match.params;
     
     this.props.dispatch( questionActions.getAllByForeanId( topic_id, 'topic' ) );
     
     this.props.dispatch( userActions.getAll() );
+
+    await this.setState( {isDataLoaded: true} );
   }
   
   render() {
+
+    if( !this.state.isDataLoaded )
+      return <Loading />
     
     let questions = [];
     if( !this.props.question.data && !this.props.user.data )
@@ -37,7 +51,7 @@ class Questions extends Component {
               </a>
               <div className="row">
                 <div className="col">
-                  <Link to={{ pathname: "/" + username}}>{username}</Link> {/*userLoggedProfile variable que dira si el usuario puede o no hacer cambios en el perfil*/}
+                  <a href={"/" + username}>{username}</a>
                 </div>
                 <div className="col">
                   {question.attributes.date}

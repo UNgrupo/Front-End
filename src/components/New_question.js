@@ -60,8 +60,6 @@ class New_question extends Component {
   
   render() {
     
-    console.log( this.props.question );
-    
     if( this.props.question.success && this.state.submitted ){
       window.location.href = "/questions/" + this.props.topic.id;
     }
@@ -75,7 +73,7 @@ class New_question extends Component {
       descriptionError = data.data.description;
     }
     
-    return (
+    return ( //Falta cambiar la parte de agregar el TextRichArea a poder agregar una pregunta
         <div>
                 
           <Navbar />

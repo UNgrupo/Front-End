@@ -24,9 +24,9 @@ function loginFacebook( token ){
         document.body.classList.add('busy-cursor');
         await axios.get(API_ROUTE + "auth/facebook/callback?code=" + token.accessToken )
         .then(async resp => {
-            window.localStorage.setItem('user', JSON.stringify( {jwt: token.accessToken} ));
+            //window.localStorage.setItem('user', JSON.stringify( {jwt: token.accessToken} ));
+            await getUserIdByEmail( token );
             dispatch(success( 'Log success' ));
-            await getUserIdByEmail( token.email );
         })
         .catch(error =>{
             dispatch( failure( "The facebook user is not registered din the page") );
@@ -34,16 +34,18 @@ function loginFacebook( token ){
         document.body.classList.remove('busy-cursor');
         
     };
-    function success(user) { return { type: 'LOGIN-SUCCESS', data: user } }
+    function success(user) { return { type: 'LOGIN-SUCCESS-SOCIAL', data: user } }
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
-    async function getUserIdByEmail( email ){
+    async function getUserIdByEmail( token ){
         document.body.classList.add('busy-cursor');
-        await axios.get(API_ROUTE + 'users.json', {headers: authHeader()})
+        //await axios.get(API_ROUTE + 'users.json', {headers: authHeader()})
+        await axios.get(API_ROUTE + 'users.json', {headers: { 'Authorization': 'Bearer ' + token.accessToken }})
         .then(response => {
             response.data.data.map( user => {
-                if(user.attributes.email === email){
-                    window.localStorage.setItem('user-id', user.id);
+                if(user.attributes.email === token.email){
+                    window.localStorage.setItem('user', JSON.stringify({...user, jwt: token.accessToken }));
                 }
+                return null;
             });  
         })
         .catch(error => {
@@ -66,12 +68,12 @@ function login( user ){
         };
         document.body.classList.add('busy-cursor');
         await axios.post(API_ROUTE + 'user_token', data)
-        .then(response => {
+        .then(async response => {
             const token = response.data;
             if( token && token.jwt ){
+                //window.localStorage.setItem('user', JSON.stringify( token ));
+                await getUserIdByEmail( email, token );
                 dispatch(success( 'Log success' ));
-                window.localStorage.setItem('user', JSON.stringify( token ));
-                getUserIdByEmail( email );
             }
         })
         .catch(error => {
@@ -82,14 +84,17 @@ function login( user ){
     
     function success(user) { return { type: 'LOGIN-SUCCESS', data: user } }
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
-    async function getUserIdByEmail( email ){
+    async function getUserIdByEmail( email, token ){
         document.body.classList.add('busy-cursor'); 
-        await axios.get(API_ROUTE + 'users.json', {headers: authHeader()})
+        //await axios.get(API_ROUTE + 'users.json', {headers: authHeader()})
+        await axios.get(API_ROUTE + 'users.json', {headers: { 'Authorization': 'Bearer ' + token.jwt }})
         .then(async response => {
             await response.data.data.map( user => {
                 if(user.attributes.email === email){
-                    window.localStorage.setItem('user-id', user.id);
+                    //window.localStorage.setItem('user-id', user.id);
+                    window.localStorage.setItem('user', JSON.stringify({...user, ...token}));
                 }
+                return null;
             });  
         })
         .catch(error => {
@@ -113,6 +118,7 @@ function getUserByUsername( username ){
                     dispatch( success( user ) );
                     userExist = true;
                 }
+                return null;
             });
             if(!userExist)
                 dispatch( failure( 'The user doesnt exist' ) );

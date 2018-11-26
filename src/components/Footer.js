@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import '../styles/Footer.css';
 import twitter_logo from '../resources/twitter.png';
 import pinterest_logo from '../resources/pinterest.png';

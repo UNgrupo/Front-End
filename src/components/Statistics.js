@@ -26,8 +26,6 @@ class Statistics extends Component {
     
     dispatch( statisticActions.getById( this.props.user.id ) );
     
-    console.log( this.props.user );
-    
     if( (answer.data || question.data || comment.data || !answer.success || !answer.success || !answer.success) && load){
       dispatch( questionActions.getAllByForeanId( userId, 'user' ) );
       dispatch( answerActions.getAllByForeanId( userId, 'user' ) );

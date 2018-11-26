@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Route, Switch, Router } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
 
 import { createStore, applyMiddleware } from 'redux';
@@ -60,7 +60,6 @@ ReactDOM.render(
                 <Route exact path='/log_in' component={Log_in}/>
                 <Route exact path='/sign_up' component={Sign_up}/>
                 <Route exact path='/home' component={Home}/>
-                {/*<Route exact path='/my_profile' component={Profile}/>*/}
                 <Route exact path='/:username' component={Profile}/>
                 <Route path="/topics/:subject_id" component={Topic} />
                 <Route path='/new_subject' component={New_subject}/>

@@ -30,7 +30,8 @@ function getAllCommentsOfQuestion(){
                         if(answers[i].id.toString() === resComments[j].attributes['answer-id'].toString())
                             comments_i.push(resComments[j]);
                     }
-                    comments.push(comments_i);
+                    comments[answers[i].id-1] = comments_i;
+                    //comments.push(comments_i);
                 }
                 dispatch( success( comments ) );
             })

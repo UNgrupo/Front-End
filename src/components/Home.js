@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
 import Card from './Card.js';
+
 import subjectActions from '../_actions/actions-subject';
 
 class Home extends Component {
@@ -13,8 +14,6 @@ class Home extends Component {
   }
   
   render() {
-    
-    console.log( window.localStorage );
     
     let subjects = [];
     
