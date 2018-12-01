@@ -6,6 +6,9 @@ import Footer from './Footer';
 
 import userActions from '../_actions/actions-user';
 
+import '../styles/Titles.css';
+import '../styles/Form.css';
+
 class Update_profile extends Component{
     
     constructor(props){
@@ -24,11 +27,7 @@ class Update_profile extends Component{
         this.updateProfile = this.updateProfile.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
-    
-    componentDidMount(){
-        this.props.dispatch( userActions.getById( window.localStorage.getItem( 'user-id' ) ) );
-    }
-    
+
     async updateProfile(e){
         e.preventDefault();
         
@@ -50,10 +49,8 @@ class Update_profile extends Component{
         if( name )
           updateInfo.name = name;
           
-          console.log( updateInfo );
-          
         if( password || username || name ){
-          await this.props.dispatch( userActions.update( window.localStorage.getItem( 'user-id' ), updateInfo ) );
+          await this.props.dispatch( userActions.update( JSON.parse(window.localStorage.getItem('user')).id, updateInfo ) );
           if( this.props.user === 'USER updated' ){
             (window.location.href = '/home');
           }
@@ -81,42 +78,40 @@ class Update_profile extends Component{
               
           <Navbar />
           
-          <div className='panel py-5 my-5 container'>
-            <div className='container-form-pad '>
-              <div className='container-form-2'>
-                <div className='panel-heading my-3 text-center'>
-                  <h1 className='title-l'>Update your profile</h1>
-                </div>
-                <div className='panel-body px-5'>
-                  { submitted && errorMessage && <div className='help-block text-danger text-center'><big>{errorMessage}</big></div> }
-                  <form onSubmit={ this.updateProfile } className='pt-3'>
-                    <div className='form-group'>
-                      <label htmlFor='username'>Username:</label>
-                      <input type='text' className='form-control' id='username' name='username' value={username} onChange={this.handleChange}/>
+          <div className='panel my-5 container'>
+            <div className='form-container form-container-margin '>
+              <div className='panel-heading my-3'>
+                <h1 className='title-form mb-2'>Update your profile</h1>
+              </div>
+              <div className='panel-body px-5'>
+                { submitted && errorMessage && <div className='help-block text-danger text-center'><big>{errorMessage}</big></div> }
+                <form onSubmit={ this.updateProfile } className='pt-3'>
+                  <div className='form-group'>
+                    <label htmlFor='username'>Username:</label>
+                    <input type='text' className='form-control' id='username' name='username' value={username} onChange={this.handleChange}/>
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='name'>Full name:</label>
+                    <input type='text' className='form-control' id='name' name='name' value={name} onChange={this.handleChange}/>
+                  </div>
+                  <div className={'form-group' + (submitted && !matchPassword ? ' has-error' : '')}>
+                    <label htmlFor='password'>Password:</label>
+                    <input type='text' className='form-control' id='password' name='password' value={password} onChange={this.handleChange}/>
+                    <label htmlFor='confirmPassword' className='mt-3'>Confirm the password:</label>
+                    <input type='text' className='form-control' id='confirmPassword' name='confirmPassword' value={confirmPassword} onChange={this.handleChange}/>
+                    { submitted && !matchPassword && <div className='help-block'><small>Passwords must match</small></div> }
+                  </div>
+                  <div className='row pt-3 mb-5'>
+                    <div className='col'>
+                      <input type='submit' className='btn btn-success btn-block active' value='Update me!' />
                     </div>
-                    <div className='form-group'>
-                      <label htmlFor='name'>Full name:</label>
-                      <input type='text' className='form-control' id='name' name='name' value={name} onChange={this.handleChange}/>
+                    <div className='col'>
+                      <a href='/my_profile'>
+                        <input className='btn btn-danger btn-block active' defaultValue='Go back!' />
+                      </a>
                     </div>
-                    <div className={'form-group' + (submitted && !matchPassword ? ' has-error' : '')}>
-                      <label htmlFor='password'>Password:</label>
-                      <input type='text' className='form-control' id='password' name='password' value={password} onChange={this.handleChange}/>
-                      <label htmlFor='confirmPassword' className='mt-3'>Confirm the password:</label>
-                      <input type='text' className='form-control' id='confirmPassword' name='confirmPassword' value={confirmPassword} onChange={this.handleChange}/>
-                      { submitted && !matchPassword && <div className='help-block'><small>Passwords must match</small></div> }
-                    </div>
-                    <div className='row pt-3 mb-5'>
-                      <div className='col'>
-                        <input type='submit' className='btn btn-success btn-block active' defaultValue='Add me!' />
-                      </div>
-                      <div className='col'>
-                        <a href='/my_profile'>
-                          <input className='btn btn-danger btn-block active' defaultValue='Go back!' />
-                        </a>
-                      </div>
-                    </div>
-                  </form>
-                </div>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

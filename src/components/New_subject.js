@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
+
 import subjectActions from '../_actions/actions-subject';
 
 import '../styles/Form.css';
@@ -51,7 +52,7 @@ class New_subject extends Component{
     render(){
         
         if( this.props.subject.success )
-            window.location.href = "/home";
+            window.location.href = '/home';
         
         const { submitted, name } = this.state;
         const { success, data } = this.props.subject;
@@ -65,36 +66,33 @@ class New_subject extends Component{
                 
                 <Navbar />
                 
-                <div className="panel py-5 my-5 container">
-                    <div className="container-form-pad ">
-                        <div className="container-form-2">
-                            <div className="panel-heading my-3 text-center">
-                                <h1 className="title-l">New Subject</h1>
-                            </div>
-                            <div className="panel-body px-5">
-                                <form onSubmit={ this.handleSubmit } className="pt-3">
-                                    <div className={ 'form-group' + (submitted && ( !name || nameError) ? ' has-error': '')}>
-                                        <label htmlFor="name">Name:</label>
-                                        <input type="text" className="form-control" id="name" name="name" value={name} onChange={this.handleChange}/>
-                                        { submitted && !name && <div className='help-block'><small>Name is required</small></div> }
-                                        { submitted && nameError && <div className='help-block'><small>{ nameError }</small></div> }
+                <div className='panel py-5 my-5 container'>
+                    <div className='form-container-margin form-container'>
+
+                        <h1 className='title-form my-3 text-center'>New Subject</h1>
+                        <div className='panel-body px-5'>
+                            <form onSubmit={ this.handleSubmit } className='pt-3'>
+                                <div className={ 'form-group' + (submitted && ( !name || nameError) ? ' has-error': '')}>
+                                    <label htmlFor='name'>Name:</label>
+                                    <input type='text' className='form-control' id='name' name='name' value={name} onChange={this.handleChange}/>
+                                    { submitted && !name && <div className='help-block'><small>Name is required</small></div> }
+                                    { submitted && nameError && <div className='help-block'><small>{ nameError }</small></div> }
+                                </div>
+                                <div className='form-group'>
+                                    <label htmlFor='description'>Description:</label>
+                                    <input type='text' className='form-control' id='description' name='description' />
+                                </div>
+                                <div className='row pt-3 mb-5'>
+                                    <div className='col'>
+                                        <input type='submit' className='btn btn-success btn-block active' value='Add me!' />
                                     </div>
-                                    <div className="form-group">
-                                        <label htmlFor="description">Description:</label>
-                                        <input type="text" className="form-control" id="description" name="description" />
+                                    <div className='col'>
+                                        <a href='/home'>
+                                            <input className='btn btn-danger btn-block active' defaultValue='Go back!' />
+                                        </a>
                                     </div>
-                                    <div className="row pt-3 mb-5">
-                                        <div className="col">
-                                            <input type="submit" className="btn btn-success btn-block active" defaultValue="Add me!" />
-                                        </div>
-                                        <div className="col">
-                                            <a href="/home">
-                                                <input className="btn btn-danger btn-block active" defaultValue="Go back!" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

@@ -8,6 +8,7 @@ import commentReducer from './reducer-comment';
 import subjectReducer from './reducer-subject';
 import topicReducer from './reducer-topic';
 import statisticReducer from './reducer-statistic';
+import photoReducer from './reducer-photo';
 
 const allReducers = combineReducers({
     user: userReducer,
@@ -17,7 +18,8 @@ const allReducers = combineReducers({
     comment: commentReducer,
     subject: subjectReducer,
     topic: topicReducer,
-    statistic: statisticReducer
+    statistic: statisticReducer,
+    photo: photoReducer
 });
 
 export default allReducers;

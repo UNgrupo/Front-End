@@ -1,23 +1,14 @@
-.container-form-pad {
-    padding: 10% 25%;
+.form-container-margin{
+    margin: 10% 25%;
 }
 
-.container-form-2{
+.form-container {
     font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
     
-    border-color: grey;
-    border-width: 7px;
-    border-style: groove;
-    border-radius: 15px;
-}
-
-.container-form {
-    font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
-    
-    border-color: grey;
-    border-width: 7px;
-    border-style: groove;
-    border-radius: 15px;
+    border-color: rgb(48, 43, 43);
+    border-width: 30px;
+    border-style: double;
+    border-radius: 55px;
 }
 
 .error{

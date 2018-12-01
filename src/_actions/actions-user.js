@@ -24,7 +24,6 @@ function loginFacebook( token ){
         document.body.classList.add('busy-cursor');
         await axios.get(API_ROUTE + "auth/facebook/callback?code=" + token.accessToken )
         .then(async resp => {
-            //window.localStorage.setItem('user', JSON.stringify( {jwt: token.accessToken} ));
             await getUserIdByEmail( token );
             dispatch(success( 'Log success' ));
         })
@@ -38,12 +37,11 @@ function loginFacebook( token ){
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
     async function getUserIdByEmail( token ){
         document.body.classList.add('busy-cursor');
-        //await axios.get(API_ROUTE + 'users.json', {headers: authHeader()})
         await axios.get(API_ROUTE + 'users.json', {headers: { 'Authorization': 'Bearer ' + token.accessToken }})
         .then(response => {
             response.data.data.map( user => {
                 if(user.attributes.email === token.email){
-                    window.localStorage.setItem('user', JSON.stringify({...user, jwt: token.accessToken }));
+                    window.localStorage.setItem('user', JSON.stringify({...user, jwt: token.accessToken, thumbs: {} }));
                 }
                 return null;
             });  
@@ -71,7 +69,6 @@ function login( user ){
         .then(async response => {
             const token = response.data;
             if( token && token.jwt ){
-                //window.localStorage.setItem('user', JSON.stringify( token ));
                 await getUserIdByEmail( email, token );
                 dispatch(success( 'Log success' ));
             }
@@ -86,13 +83,11 @@ function login( user ){
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
     async function getUserIdByEmail( email, token ){
         document.body.classList.add('busy-cursor'); 
-        //await axios.get(API_ROUTE + 'users.json', {headers: authHeader()})
         await axios.get(API_ROUTE + 'users.json', {headers: { 'Authorization': 'Bearer ' + token.jwt }})
         .then(async response => {
             await response.data.data.map( user => {
                 if(user.attributes.email === email){
-                    //window.localStorage.setItem('user-id', user.id);
-                    window.localStorage.setItem('user', JSON.stringify({...user, ...token}));
+                    window.localStorage.setItem('user', JSON.stringify({...user, ...token, thumbs: {}}));
                 }
                 return null;
             });  

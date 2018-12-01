@@ -52,7 +52,7 @@ class RichTextEditor extends React.Component {
    */
 
   state = {
-    value: Value.fromJSON(Plain.deserialize("")),
+    value: Value.fromJSON(Plain.deserialize('')),
   }
 
   /**
@@ -100,8 +100,8 @@ class RichTextEditor extends React.Component {
   render() {
     return (
       <div className='bg-light'>
-        <div className="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-          <div className="btn-group mx-3 mt-3" role="group" aria-label="First group">
+        <div className='btn-toolbar' role='toolbar' aria-label='Toolbar with button groups'>
+          <div className='btn-group mx-3 mt-3' role='group' aria-label='First group'>
             {this.renderMarkButton('bold', bold_icon)}
             {this.renderMarkButton('italic', italic_icon)}
             {this.renderMarkButton('underlined', underline_icon)}
@@ -116,7 +116,7 @@ class RichTextEditor extends React.Component {
         <Editor
           className='mx-5 py-3 mb-3'
           spellCheck
-          placeholder="Write your text here..."
+          placeholder='Write your text here...'
           ref={this.ref}
           value={this.state.value}
           onChange={this.onChange}
@@ -142,11 +142,11 @@ class RichTextEditor extends React.Component {
     return (
       <button
         onMouseDown={event => this.onClickMark(event, type)}
-        className={'bg-light ' + (isActive ? "border-1": 'border-0')}
+        className={'bg-light ' + (isActive ? 'border-1': 'border-0')}
         type = 'button'
       >
       
-      <img title={type} alt={type} src={icon} className="text-option-icon"/>
+      <img title={type} alt={type} src={icon} className='text-option-icon'/>
       
       </button>
     );
@@ -175,11 +175,11 @@ class RichTextEditor extends React.Component {
     return (
       <button
         onMouseDown={event => this.onClickBlock(event, type)}
-        className={'bg-light ' + (isActive ? "border-1": 'border-0')}
-        type="button"
+        className={'bg-light ' + (isActive ? 'border-1': 'border-0')}
+        type='button'
       >
       
-      <img title={type} alt={type} src={icon} className="text-option-icon"/>
+      <img title={type} alt={type} src={icon} className='text-option-icon'/>
       
       </button>
     );

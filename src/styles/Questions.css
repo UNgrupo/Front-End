@@ -1,11 +1,17 @@
 .border-panel{
     border-color: grey;
-    border-radius: 3px;
-    border-width: 2px;
-    border-style: groove;
+    border-radius: 15px;
+    border-width: 4px;
+    border-style: double;
 }
 
 .no-decoration-a{
 color: #333;
 text-decoration: none;
+}
+
+.margin-questions{
+    margin: 0% 30%;
+    font-family: 'Pacifico', cursive;
+    font-size: 25px;
 }

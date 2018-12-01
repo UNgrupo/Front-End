@@ -9,6 +9,7 @@ import questionActions from '../_actions/actions-question';
 import userActions from '../_actions/actions-user';
 
 import '../styles/Questions.css';
+import '../styles/Titles.css';
 
 class Questions extends Component {
 
@@ -24,9 +25,9 @@ class Questions extends Component {
     
     const {topic_id} = this.props.match.params;
     
-    this.props.dispatch( questionActions.getAllByForeanId( topic_id, 'topic' ) );
+    await this.props.dispatch( questionActions.getAllByForeanId( topic_id, 'topic' ) );
     
-    this.props.dispatch( userActions.getAll() );
+    await this.props.dispatch( userActions.getAll() );
 
     await this.setState( {isDataLoaded: true} );
   }
@@ -35,47 +36,52 @@ class Questions extends Component {
 
     if( !this.state.isDataLoaded )
       return <Loading />
-    
-    let questions = [];
-    if( !this.props.question.data && !this.props.user.data )
-      questions = this.props.question.map((question, i) => {
+
+    const questions = this.props.question.map((question, i) => {
+      
+      const username = this.props.user[question.attributes['user-id']-1].attributes.usern;
+      
+      return (
         
-        const username = this.props.user[question.attributes['user-id']-1].attributes.usern;
-        
-        return (
-          
-          <div key={i} className="panel border-panel">
-            <div className="panel-body px-5 py-3">
-              <a href={"/questions/"+this.props.match.params.topic_id+'/'+question.id} className="no-decoration-a">
+        <div key={i} className='panel'>
+          <div className='panel-body px-5 mx-5 py-2'>
+            <div className='row'>
+              <a href={'/questions/' + this.props.match.params.topic_id + '/' + question.id} className='no-decoration-a'>
                 <h4>{question.attributes.title}</h4>
               </a>
-              <div className="row">
-                <div className="col">
-                  <a href={"/" + username}>{username}</a>
-                </div>
-                <div className="col">
-                  {question.attributes.date}
-                </div>
-              </div>
+              <i className='far fa-question-circle ml-3' />
+            </div>
+            <div className='row mx-2'>
+              <a href={'/' + username} className='mr-2'>
+                <img src={'https://source.unsplash.com/random/30x30?sig=' + this.props.user[question.attributes['user-id']-1].id} alt={username} className='rounded-circle' />
+              </a>
+              <a href={'/' + username} className='mr-2 mt-1'>{username}</a>
+              <div className='mt-1'>{question.attributes.date}</div>
             </div>
           </div>
-        );
-      });
+          <hr />
+        </div>
+      );
+    });
     
     return (
       <div>
         <Navbar />
         
-        <div className="content">
-          <div className="px-5 mx-5">
-            <h1 className="text-center my-4">Questions</h1>
-            <div className="panel border-panel">
-              <div className="panel-body px-5 py-3">
-                <a href={"/questions/new_question/"+this.props.match.params.topic_id} className="no-decoration-a">
-                  <h4>Add a new question</h4>
+        <div className='content'>
+          <h1 className='my-5 title-primary'>Questions</h1>
+          <div className='margin-questions border-panel'>
+            <div className='panel px-5 py-3 my-2'>
+              <div className='row panel-body px-5 py-3'>
+                <a href={'/questions/new_question/' + this.props.match.params.topic_id} className='no-decoration-a'>
+                  <h3>Add a new question</h3>
                 </a>
+                <span className='ml-3'>
+                  <a href={'/questions/new_question/' + this.props.match.params.topic_id} className='no-decoration-a'><i class='fas fa-plus-square' /></a>
+                </span>
               </div>
             </div>
+            <hr />
             {questions}
           </div>
         </div>
