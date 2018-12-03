@@ -17,8 +17,12 @@ class Questions extends Component {
       super(props);
 
       this.state = {
-        isDataLoaded: false
-      }
+        isDataLoaded: false, 
+        user: JSON.parse(window.localStorage.getItem('user'))
+      };
+      
+      this.deleteQuestion = this.deleteQuestion.bind(this);
+      this.isActualUser = this.isActualUser.bind(this);
   }
   
   async componentDidMount(){
@@ -32,11 +36,32 @@ class Questions extends Component {
     await this.setState( {isDataLoaded: true} );
   }
   
+  async deleteQuestion(id){
+    
+    await this.setState( {isDataLoaded: false} );
+    
+    await this.props.dispatch( questionActions.delete( id ) );
+    
+    const {topic_id} = this.props.match.params;
+    await this.props.dispatch( questionActions.getAllByForeanId( topic_id, 'topic' ) );
+    
+    await this.setState( {isDataLoaded: true} );
+  }
+  
+  isActualUser(question){
+      
+    const trashIcon = <span className='d-flex justify-content-end clickable' onClick={() => {this.deleteQuestion(question.id)}}>
+                        <i className="fas fa-trash-alt"></i>
+                      </span>
+    
+    return (parseInt(this.state.user.id,10) === parseInt(question.attributes['user-id'],10) ? trashIcon : '');
+  }
+  
   render() {
 
     if( !this.state.isDataLoaded )
-      return <Loading />
-
+      return <Loading />;
+    
     const questions = this.props.question.map((question, i) => {
       
       const username = this.props.user[question.attributes['user-id']-1].attributes.usern;
@@ -58,6 +83,8 @@ class Questions extends Component {
               <a href={'/' + username} className='mr-2 mt-1'>{username}</a>
               <div className='mt-1'>{question.attributes.date}</div>
             </div>
+            
+            {this.isActualUser(question)}
           </div>
           <hr />
         </div>
@@ -77,7 +104,7 @@ class Questions extends Component {
                   <h3>Add a new question</h3>
                 </a>
                 <span className='ml-3'>
-                  <a href={'/questions/new_question/' + this.props.match.params.topic_id} className='no-decoration-a'><i class='fas fa-plus-square' /></a>
+                  <a href={'/questions/new_question/' + this.props.match.params.topic_id} className='no-decoration-a'><i className='fas fa-plus-square' /></a>
                 </span>
               </div>
             </div>

@@ -17,8 +17,6 @@ import commentActions from '../_actions/actions-comment';
 import '../styles/Question.css';
 import '../styles/Titles.css';
 
-//Si el usuario ya pulso el thumb, no puede volver a pulsar el mismo
-
 class Question extends Component{
     
     constructor(props){
@@ -36,7 +34,7 @@ class Question extends Component{
             },
             commentError: '',
             isDataLoaded: false,
-            actualUser: null
+            actualUser: JSON.parse(window.localStorage.getItem('user'))
         };
         
         this.handleSubmitComment = this.handleSubmitComment.bind(this);
@@ -44,6 +42,8 @@ class Question extends Component{
         this.handleCommentChange = this.handleCommentChange.bind(this);
         this.handleAnswerChange = this.handleAnswerChange.bind(this);
         this.handleClickThumb = this.handleClickThumb.bind(this);
+        this.deleteQuestion = this.deleteQuestion.bind(this);
+        this.canUserDrop = this.canUserDrop.bind(this);
     }
     
     async componentDidMount(){
@@ -59,10 +59,9 @@ class Question extends Component{
           
           await dispatch( commentActions.getAllCommentsOfQuestion() );
           
-        this.setState( {
-            isDataLoaded: true, 
-            actualUser: JSON.parse(window.localStorage.getItem('user'))
-        } );
+            await this.setState( {
+                isDataLoaded: true
+            } );
     }
 
     async handleClickThumb(answer, number){
@@ -100,6 +99,36 @@ class Question extends Component{
             }
         });
     }
+    
+    canUserDrop(elem, type){
+      
+        const trashIcon = <span className='d-flex justify-content-end clickable' onClick={() => {this.deleteQuestion(elem.id, type)}}>
+                            <i className="fas fa-trash-alt"></i>
+                          </span>
+        
+        return (parseInt(this.state.actualUser.id,10) === parseInt(elem.attributes['user-id'],10) ? trashIcon : '');
+      }
+      
+    async deleteQuestion(id, type){
+         await this.setState( {isDataLoaded: false} );
+         
+         if(type === 'answer'){
+             
+            await this.props.dispatch( answerActions.delete( id ) );
+        
+            const {question_id} = this.props.match.params;
+            await this.props.dispatch( answerActions.getAllByForeanId( question_id, 'question', sortAlgorithms.orderQualificationGreater ) );
+             
+         } else{
+             
+            await this.props.dispatch( commentActions.delete( id ) );
+        
+            await this.props.dispatch( commentActions.getAllCommentsOfQuestion() );
+             
+         }
+        
+        await this.setState( {isDataLoaded: true} );
+     }
     
     async handleSubmitComment(e){
 
@@ -159,7 +188,8 @@ class Question extends Component{
         const propsComment = this.props.comment;
         let comments = [];
         for(let i=0; i<propsComment.length; i++){
-            comments.push(
+            comments.push( 
+                propsComment[i] !== undefined ? 
                 propsComment[i].map(comment => {
                     const userComment = this.props.user[comment.attributes['user-id']-1].attributes;
                     return(
@@ -176,12 +206,13 @@ class Question extends Component{
                                     
                                     <ShowText value={comment.attributes.description}/>
                                 </div>
+                                {this.canUserDrop(comment, 'comment')}
                             </div>
                             <hr />
                         </div>
 
                     );
-                })
+                }) : []
             );
         }
 
@@ -257,6 +288,7 @@ class Question extends Component{
                                 {comments[answer.id-1]}
                             </div>
                         </div>
+                        {this.canUserDrop(answer, 'answer')}
                     </div>
                 <hr />
                 </div>

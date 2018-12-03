@@ -62,6 +62,8 @@ class New_question extends Component {
   
   render() {
     
+    console.log(JSON.parse(window.localStorage.getItem('user')));
+    
     if( this.props.question.success && this.state.submitted ){
       window.location.href = '/questions/' + this.props.match.params.topic_id;
     }

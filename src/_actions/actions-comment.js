@@ -15,12 +15,12 @@ const commentActions = {
 export default commentActions;
 
 function getAllCommentsOfQuestion(){
-    return dispatch => {
+    return async dispatch => {
         document.body.classList.add('busy-cursor');
-        axios.get(API_ROUTE + 'comments', {headers: authHeader()})
-        .then(response => {
-            axios.get(API_ROUTE + 'answers', {headers: authHeader()})
-            .then(responseAnswers => {
+        await axios.get(API_ROUTE + 'comments', {headers: authHeader()})
+        .then(async response => {
+            await axios.get(API_ROUTE + 'answers', {headers: authHeader()})
+            .then(async responseAnswers => {
                 let comments = [];
                 const resComments = response.data.data;
                 const answers = responseAnswers.data.data;
@@ -33,7 +33,7 @@ function getAllCommentsOfQuestion(){
                     comments[answers[i].id-1] = comments_i;
                     //comments.push(comments_i);
                 }
-                dispatch( success( comments ) );
+                await dispatch( success( comments ) );
             })
             .catch(error => {
                 dispatch( failure( error.message ) );

@@ -34,16 +34,16 @@ class Navbar extends Component {
               <li className='nav-item active'>
                 <a href={'/' + this.state.username} className='no-decoration-a'>
                   <span className='fa-stack fa-mg fa-lg'>
-                    <i class='fas fa-square fa-stack-2x fa-inverse' />
-                    <i class='fas fa-user fa-stack-1x' />
+                    <i className='fas fa-square fa-stack-2x fa-inverse' />
+                    <i className='fas fa-user fa-stack-1x' />
                   </span>
                 </a>
               </li>
               <li className='nav-item active'>
                 <a href={'/'} className='no-decoration-a'>
                   <span className='fa-stack fa-mg fa-lg'>
-                    <i class='fas fa-square fa-stack-2x fa-inverse' />
-                    <i class='fas fa-sign-out-alt fa-stack-1x' />
+                    <i className='fas fa-square fa-stack-2x fa-inverse' />
+                    <i className='fas fa-sign-out-alt fa-stack-1x' />
                   </span>
                 </a>
               </li>
