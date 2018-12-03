@@ -18,7 +18,6 @@ class Common {
                 document.body.classList.add('busy-cursor');
                 await axios.get(API_ROUTE + (this.element === 'users' ? 'users.json' : this.element), {headers: authHeader()})
                 .then(response => {
-                    console.log(response);
                     dispatch( success( response.data.data ) );
                 })
                 .catch(error => {

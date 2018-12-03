@@ -1,0 +1,1 @@
+Se ha mejorado la interfaz grafica notablemente, y se han incluido las opciones de eliminar los distintos elementos

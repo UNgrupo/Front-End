@@ -60,10 +60,10 @@ ReactDOM.render(
                 <Route exact path='/log_in' component={Log_in}/>
                 <Route exact path='/sign_up' component={Sign_up}/>
                 <Route exact path='/home' component={Home}/>
+                <Route exact path='/new_subject' component={New_subject}/>
                 <Route exact path='/:username' component={Profile}/>
-                <Route path="/topics/:subject_id" component={Topic} />
-                <Route path='/new_subject' component={New_subject}/>
-                <Route path='/new_topic/:subject_id' component={New_topic}/>
+                <Route exact path="/topics/:subject_id" component={Topic} />
+                <Route exact path='/new_topic/:subject_id' component={New_topic}/>
                 <Route exact strict path='/questions/:topic_id' component={Questions}/>
                 <Route exact strict path='/questions/new_question/:topic_id' component={New_question}/>
                 <Route exact strict path='/questions/:topic_id/:question_id' component={Question}/>

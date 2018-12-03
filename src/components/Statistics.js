@@ -4,9 +4,6 @@ import { VictoryPie, VictoryChart, VictoryTheme, VictoryLegend, VictoryTooltip, 
 import html2pdf from 'html2pdf.js';
 
 import statisticActions from '../_actions/actions-statistic';
-import questionActions from '../_actions/actions-question';
-import answerActions from '../_actions/actions-answer';
-import commentActions from '../_actions/actions-comment';
 
 import generateDataByDate from '../scripts/generateDataByDate';
 import getRandomColor from '../scripts/randomColor';
@@ -15,22 +12,19 @@ class Statistics extends Component {
   
   constructor(props){
     super(props);
+
+    this.state = {
+      isDataLoaded: false
+    };
     
     this.downloadStatisticsPdf = this.downloadStatisticsPdf.bind(this);
   }
   
-  componentDidMount(){
-    
-    const {dispatch, comment, question, answer, load} = this.props;
-    const userId = window.localStorage.getItem( 'user-id' );
-    
-    dispatch( statisticActions.getById( this.props.user.id ) );
-    
-    if( (answer.data || question.data || comment.data || !answer.success || !answer.success || !answer.success) && load){
-      dispatch( questionActions.getAllByForeanId( userId, 'user' ) );
-      dispatch( answerActions.getAllByForeanId( userId, 'user' ) );
-      dispatch( commentActions.getAllByForeanId( userId, 'user' ) ); 
-    }
+  async componentDidMount(){
+
+    await this.props.dispatch( statisticActions.getById( this.props.user.id ) );
+
+    await this.setState( {isDataLoaded: true} );
   }
   
   downloadStatisticsPdf(){
@@ -50,69 +44,68 @@ class Statistics extends Component {
   
   render() {
     
+    if( !this.state.isDataLoaded )
+      return <p>Loading</p>
+
     const {question, answer, comment} = this.props;
     
-    let userStatistics = Object;
-    if( this.props.statistic.data.attributes )
-      userStatistics = this.props.statistic.data.attributes;
+    const userStatistics = this.props.statistic.data.attributes;
     
     const basicUserStatistics = [
       {x: 'Total answers', y: userStatistics['number-of-answers'] - userStatistics['number-of-best-answers'], label: 'Total answers: ' + userStatistics['number-of-answers'] },
       {x: 'Best answers', y: userStatistics['number-of-best-answers'], label: 'Best answers: ' + userStatistics['number-of-best-answers']}
     ];
     
-    let dataByDate = Object;
-    let statisticsCharts = Object;
-    if( !answer.data && !question.data && !comment.data ){
-      dataByDate = generateDataByDate( [answer, question, comment, answer.concat(question.concat(comment))], ['answersByDate', 'commentsByDate', 'questionsByDate', 'totalActivityByDate']);
+    const dataByDate = generateDataByDate( [answer, question, comment, answer.concat(question.concat(comment))], ['answersByDate', 'commentsByDate', 'questionsByDate', 'totalActivityByDate']);
       
-      statisticsCharts = Object.keys(dataByDate).map(data => {
-        const color  = getRandomColor();
-        
-        var statisticTitle = data.split(/(?=[A-Z])/).join(" ");
-        statisticTitle = statisticTitle[0].toUpperCase() + statisticTitle.slice(1).toLowerCase();
-        
-        return (
-          <div key={data} className='col-md-12 mb-5 d-flex align-items-center flex-column'>
-            <h2>{statisticTitle}</h2>
+    const statisticsCharts = Object.keys(dataByDate).map(data => {
+      const color  = getRandomColor();
+          
+      var statisticTitle = data.split(/(?=[A-Z])/).join(' ');
+      statisticTitle = statisticTitle[0].toUpperCase() + statisticTitle.slice(1).toLowerCase();
+          
+      return (
+        <div key={data} className='col-md-12 mb-5 d-flex align-items-center flex-column'>
+          <h2>{statisticTitle}</h2>
+          
+          <VictoryChart theme={VictoryTheme.material} minDomain={{ y: 0 }} height={200}>
+          
+            <VictoryLegend x={200} y={20} orientation='horizontal' gutter={20}
+              data={[{ name: data, symbol: { fill: color, type: 'square' } }]}
+            />
             
-            <VictoryChart theme={VictoryTheme.material} minDomain={{ y: 0 }} height={200}>
+            <VictoryAxis
+              style={{ axis: { stroke: 'black' },
+                axisLabel: { fontSize: 20 },
+                ticks: { stroke: 'grey', size: 5 },
+                tickLabels: { fontSize: 8, padding: 1, angle:45, verticalAnchor: 'middle', textAnchor:'start' }
+              }}
+            />
             
-              <VictoryLegend x={200} y={20} orientation="horizontal" gutter={20}
-                data={[{ name: data, symbol: { fill: color, type: "square" } }]}
-              />
-              
-              <VictoryAxis
-                style={{ axis: { stroke: 'black' },
-                  axisLabel: { fontSize: 20 },
-                  ticks: { stroke: "grey", size: 5 },
-                  tickLabels: { fontSize: 8, padding: 1, angle:45, verticalAnchor: "middle", textAnchor:'start' }
-                }}
-              />
-              
-              <VictoryAxis dependentAxis={true} orientation="left"
-                style={{ axis: { stroke: 'black' },
-                  axisLabel: { fontSize: 20 },
-                  ticks: { stroke: "grey", size: 5 },
-                  tickLabels: { fontSize: 8, padding: 1}
-                }}
-              />
-              
-              <VictoryArea x='date' y='posts' interpolation="linear" sortKey="date"
-                style={{data: { stroke: color, fill: color }, parent: { border: "1px solid #ccc"}}}
-                data={dataByDate[data]}
-              />
-              
-            </VictoryChart>
+            <VictoryAxis dependentAxis={true} orientation='left'
+              style={{ axis: { stroke: 'black' },
+                axisLabel: { fontSize: 20 },
+                ticks: { stroke: 'grey', size: 5 },
+                tickLabels: { fontSize: 8, padding: 1}
+              }}
+            />
             
-          </div>
-        );
-      });
-    }
+            <VictoryArea x='date' y='posts' interpolation='linear' sortKey='date'
+              style={{data: { stroke: color, fill: color }, parent: { border: '1px solid #ccc'}}}
+              data={dataByDate[data]}
+            />
+            
+          </VictoryChart>
+          
+        </div>
+      );
+    });
+  
     
     const { user } = this.props
     
     return (
+
       <div>
         <div className='panel' id='statisticsPdf'>
           <h1 className='text-center my-3 py-3'>Statistics of {user.attributes.usern}</h1>
@@ -134,15 +127,15 @@ class Statistics extends Component {
               
               <VictoryChart theme={VictoryTheme.material} domain={{x: [-1000, 1000], y: [0, 100]}} height={200}>
               
-                <VictoryLegend x={50} y={0} gutter={20} orientation="horizontal"
+                <VictoryLegend x={50} y={0} gutter={20} orientation='horizontal'
                   style={{ title: { fontSize: 20 } }}
-                  data={[ { name: "Total answers" }, { name: "Best answers" } ]}
+                  data={[ { name: 'Total answers' }, { name: 'Best answers' } ]}
                 />
                 
-                <VictoryAxis tickFormat={() => ''} style={{ axis: {stroke: "none"} }} />
+                <VictoryAxis tickFormat={() => ''} style={{ axis: {stroke: 'none'} }} />
                 
                 <VictoryPie labelComponent={<VictoryTooltip/>}
-                  style={{data: { stroke: 'yellow', fill: 'yellow' }, parent: { border: "1px solid #ccc"}}}
+                  style={{data: { stroke: 'yellow', fill: 'yellow' }, parent: { border: '1px solid #ccc'}}}
                   data={basicUserStatistics}
                 />
                 

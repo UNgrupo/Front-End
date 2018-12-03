@@ -7,20 +7,10 @@
     border-radius: 15px;
 }
 
-.txt-r{
-    text-align: right !important;
-    justify-content: flex-end !important;
-    padding-right: 20px;
+span.clickable {
+    cursor: pointer;
 }
 
-.image-like{
-    width: 25px;
-    height: 25px;
-}
-
-.shadow-textarea textarea.form-control::placeholder {
-    font-weight: 300;
-}
-.shadow-textarea textarea.form-control {
-    padding-left: 0.8rem;
+span.opacity {
+    opacity: .4;
 }

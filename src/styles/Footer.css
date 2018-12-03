@@ -1,27 +1,10 @@
-.hr{
-    border-width: 4px;
-    border-color: black;
+.background-footer{
+    background: #ADA991;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, rgb(167, 165, 148), rgb(206, 202, 188), rgb(167, 165, 148));  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, rgb(167, 165, 148), rgb(206, 202, 188), rgb(167, 165, 148)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
-.align{
-    justify-content: space-around;
-    text-align: center;
+.text-style-footer{
+    font-family: 'Roboto', sans-serif;
     font-size: 20px;
-}
-
-.address-text{
-    font-size: 15px;
-}
-
-.align-left{
-    text-align: left;
-}
-
-.align-right{
-    text-align: right;
-}
-
-.image{
-    width: 35px;
-    height: 35px;
 }

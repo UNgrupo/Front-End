@@ -4,11 +4,23 @@ import { connect } from 'react-redux';
 import Navbar from './Navbar.js';
 import Footer from './Footer.js';
 import Card from './Card.js';
+import Loading from './Loading.js';
+
 import topicActions from '../_actions/actions-topic';
 import subjectActions from '../_actions/actions-subject';
 
+import '../styles/Titles.css';
+
 class Topic extends Component{
     
+    constructor(props){
+        super(props);
+        
+        this.state = {
+            isDataLoaded: false
+        };
+    }
+
     async componentDidMount(){
         
         const { subject_id } = this.props.match.params;
@@ -16,15 +28,18 @@ class Topic extends Component{
         await this.props.dispatch( topicActions.getAllByForeanId( subject_id, 'subject' ) );
         
         await this.props.dispatch( subjectActions.getById( subject_id ) );
+
+        await this.setState( {isDataLoaded: true} );
     }
     
     render(){
-        let topics = [];
-        
-        if( !this.props.topic.data )
-        topics = this.props.topic.map((topic, i) => {
+
+        if( !this.state.isDataLoaded )
+            return <Loading />
+
+        const topics = this.props.topic.map((topic, i) => {
             return(
-                <Card key={i} title={topic.attributes.name} description={topic.attributes.description} route={"/questions/" + topic.id} />
+                <Card key={i} title={topic.attributes.name} description={topic.attributes.description} route={'/questions/' + topic.id} />
             );
         });
         
@@ -33,15 +48,15 @@ class Topic extends Component{
                 
                 <Navbar />
                 
-                <div className="panel mb-5">
-                    <div className="panel-heading text-center my-5">
-                        <h1>Topics of {(this.props.subject.attributes ? this.props.subject.attributes.name : '')}</h1>
+                <div className='panel mb-5'>
+                    <div className='panel-heading my-5'>
+                        <h1 className='title-primary'>Topics of {this.props.subject.attributes.name}</h1>
                     </div>
-                    <div className="container">
-                        <div className="panel-body row">
+                    <div className='container'>
+                        <div className='panel-body row'>
                         
                             {topics}
-                            <Card title="New topic" description={"Add a new topic to " + (this.props.subject.attributes ? this.props.subject.attributes.name : '')} route={"/new_topic/" + this.props.match.params.subject_id} />
+                            <Card title='New topic' description={'Add a new topic to ' + this.props.subject.attributes.name} route={'/new_topic/' + this.props.match.params.subject_id} />
                             
                         </div>
                     </div>
