@@ -22,7 +22,7 @@
 
 /* Se utiliza para el titulo de los formularios */
 .title-form{
-    font-family: 'Pacifico', cursive;
+    font-family: 'Crimson Text', serif;
     font-size: 100px;
     font-weight: bold;
     color: rgb(24, 20, 20);
@@ -55,10 +55,9 @@
 
 /* Es el titulo del proyecto usado en otras paginas que no sea el home */
 .title-proyect{
-    font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
     font-family: 'Pacifico', cursive;
     font-size: 100px;
-    color: #D5D5D5;
+    color: rgb(99, 86, 86);
     
     text-align: center;
     text-transform: uppercase;
@@ -69,7 +68,6 @@
 
 /* Es el titulo del proyecto usado en el home */
 .title-home {
-    font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
     font-family: 'Pacifico', cursive;
     font-size: 140px;
     color: rgb(99, 86, 86);
@@ -78,7 +76,7 @@
     text-transform: uppercase;  
     text-rendering: optimizeLegibility;
     
-    padding: 120px 50px 70px 50px;
+    padding: 70px 50px 70px 50px;
   }
 
 /*  */

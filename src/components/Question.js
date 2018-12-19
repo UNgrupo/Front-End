@@ -6,6 +6,7 @@ import Footer from './Footer.js';
 import RichTextEditor from './RichTextEditor.js';
 import ShowText from './ShowText.js';
 import Loading from './Loading.js';
+import DeleteItem from './DeleteItem.js';
 
 import sortAlgorithms from '../scripts/orderData';
 
@@ -77,7 +78,7 @@ class Question extends Component{
 
         /* Cambia los el diccionario de thumbs para saber si el usuario ha seleccionado que le gusta o no una respuesta */
         const actualUser = this.state.actualUser;
-        actualUser.thumbs[answer.id] = (actualUser.thumbs[answer.id] !== null ? actualUser.thumbs[answer.id] + number : number);
+        actualUser.thumbs[answer.id] = (actualUser.thumbs[answer.id] !== null ? (actualUser.thumbs[answer.id]) + number : number);
 
         window.localStorage.setItem('user', JSON.stringify(actualUser));
         this.setState({actualUser});
@@ -102,11 +103,18 @@ class Question extends Component{
     
     canUserDrop(elem, type){
       
-        const trashIcon = <span className='d-flex justify-content-end clickable' onClick={() => {this.deleteQuestion(elem.id, type)}}>
+        const trashIcon = <span className='d-flex justify-content-end clickable'>
                             <i className="fas fa-trash-alt"></i>
                           </span>
+
+        const _delete = <DeleteItem 
+                            item={trashIcon} 
+                            textModal='Are you sure that you want to delete this question?' 
+                            titleModal='Delete Question' 
+                            deleteFunction={() => {this.deleteQuestion(elem.id, type)}}
+                        />
         
-        return (parseInt(this.state.actualUser.id,10) === parseInt(elem.attributes['user-id'],10) ? trashIcon : '');
+        return (parseInt(this.state.actualUser.id,10) === parseInt(elem.attributes['user-id'],10) ? _delete : '');
       }
       
     async deleteQuestion(id, type){
@@ -184,7 +192,7 @@ class Question extends Component{
 
         if( !this.state.isDataLoaded )
             return <Loading />
-        
+
         const propsComment = this.props.comment;
         let comments = [];
         for(let i=0; i<propsComment.length; i++){
@@ -223,6 +231,8 @@ class Question extends Component{
             const functionThumbUp = (actualUser.thumbs[answer.id] === 1 ? ()=>{}: () => {this.handleClickThumb(answer, 1)});
             const activeThumbDown = (actualUser.thumbs[answer.id] === -1 ? 'opacity': 'clickable');
             const functionThumbDown = (actualUser.thumbs[answer.id] === -1 ? ()=>{}: () => {this.handleClickThumb(answer, -1)});
+
+            console.log(activeThumbUp, functionThumbUp, actualUser.thumbs[answer.id]);
 
             const userAnswer = this.props.user[answer.attributes['user-id']-1].attributes;
             return(

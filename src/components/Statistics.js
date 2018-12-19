@@ -50,9 +50,11 @@ class Statistics extends Component {
     const {question, answer, comment} = this.props;
     
     const userStatistics = this.props.statistic.data.attributes;
+
+    console.log(userStatistics);
     
     const basicUserStatistics = [
-      {x: 'Total answers', y: userStatistics['number-of-answers'] - userStatistics['number-of-best-answers'], label: 'Total answers: ' + userStatistics['number-of-answers'] },
+      {x: 'Total answers', y: userStatistics['number_of_answers'] - userStatistics['number-of-best-answers'], label: 'Total answers: ' + userStatistics['number-of-answers'] },
       {x: 'Best answers', y: userStatistics['number-of-best-answers'], label: 'Best answers: ' + userStatistics['number-of-best-answers']}
     ];
     

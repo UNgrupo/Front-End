@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import Footer from './Footer.js';
+import UpdatePhoto from './UpdatePhoto.js';
 
 import {testPassword} from '../scripts/testPassword.js';
-
 import confirmEmail from '../scripts/confirmEmail.js';
+
 import userActions from '../_actions/actions-user.js';
 
 import '../styles/Titles.css';
 import '../styles/Form.css';
+import '../styles/Log-in.css';
 
 class Sign_up extends Component {
   
@@ -27,7 +29,8 @@ class Sign_up extends Component {
           username: '',
           email: '', 
           submitted: false, 
-          matchPasswords: true
+          matchPasswords: true,
+          photo: ''
         };
         
         this.handlePassword = this.handlePassword.bind(this);
@@ -46,6 +49,7 @@ class Sign_up extends Component {
     const password = e.target.elements.password.value;
     const confirmPassword = e.target.elements.confirmPassword.value;
     const isEmailValid = confirmEmail( email );
+    const { photo } = this.state;
     
     if( confirmPassword !== password ){
       this.setState({
@@ -107,10 +111,14 @@ class Sign_up extends Component {
       submitted: false
     } );
   }
+
+  getPhoto(photo, context){
+    context.setState({photo});
+  }
   
   render() {
     
-    const {submitted, matchPasswords, confirmPassword, password, username, name, email, isEmailValid} = this.state;
+    const {submitted, matchPasswords, confirmPassword, password, username, name, email, isEmailValid, photo} = this.state;
     let emailError = '', nameError = '', usernError = '';
     if( this.props.authentication.data.data ){
       emailError = this.props.authentication.data.data.email;
@@ -121,6 +129,8 @@ class Sign_up extends Component {
     if( this.props.authentication.logged_in )
       window.location.href = '/home';
     
+    console.log(photo);
+
     return (
       <div>
         <h1 className='title-proyect deepshadow'>Proyecto ungrupo</h1>
@@ -160,8 +170,12 @@ class Sign_up extends Component {
                 { submitted && !matchPasswords && <div><small>Passwords doesnt match</small></div> }
                 { submitted && !confirmPassword && <div><small>Confirm password is required</small></div> }
               </div>
+              <div className={'form-group custom-file' + (submitted && (!photo) ? ' has-error': '')}>
+                <UpdatePhoto callback={this.getPhoto} context={this} buttonText='Upload a photo' css='custom-file-input' id="customFileLang"/>
+                <label class="custom-file-label" for="customFileLang">{(!photo ? 'No selected photo' : photo)}</label>
+              </div>
               <div className='pt-4'>
-                <input type='submit' className='btn btn-success btn-block active' value='Sign me up!' />
+                <input type='submit' className='btn btn-success btn-block button-log' value='Sign me up!' />
               </div>
               <div className='pt-4 text-center'>
                 <a href='/log_in'>Want to log in?</a>

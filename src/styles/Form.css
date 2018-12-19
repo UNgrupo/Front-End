@@ -4,11 +4,13 @@
 
 .form-container {
     font-family: "Avant Garde", Avantgarde, "Century Gothic", CenturyGothic, "AppleGothic", sans-serif;
+
+    background-color: rgb(255, 255, 255);
     
     border-color: rgb(48, 43, 43);
-    border-width: 30px;
+    border-width: 27px;
     border-style: double;
-    border-radius: 55px;
+    border-radius: 30px;
 }
 
 .error{

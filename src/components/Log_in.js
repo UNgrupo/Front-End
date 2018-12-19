@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import axios from 'axios';
 
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
@@ -60,6 +61,10 @@ class Log_in extends Component {
   
   responseFacebook( response ){
     this.props.dispatch( userActions.loginFacebook( response ) ); //revisar como hacer para que solo ingrese cuadno se le pide oprimiendo el boton
+
+    axios.get("https://graph.facebook.com/?access_token={" + response.accessToken + "}")
+    .then(res => {console.log(res)})
+
   }
   
   render() {
@@ -70,7 +75,7 @@ class Log_in extends Component {
     const responseGoogle = (response) => {
       
     };
-      
+
     if( logged_in && !loginSocial )
       window.location.href = '/home'; 
       
@@ -100,7 +105,7 @@ class Log_in extends Component {
                 {submitted && !password && <div className='help-block'><small>Password is required</small></div>}
               </div>
               <div className='pt-4'>
-                <input type='submit' className='btn btn-success btn-block active' value='Log me in!' />
+                <input type='submit' className='btn btn-success btn-block button-log' value='Log me in!' />
               </div>
               <div className='row pt-4'>
                 <div className='col text-center center-aling'>
@@ -119,9 +124,9 @@ class Log_in extends Component {
                 />
                 <FacebookLogin 
                   appId='1978366042223188'
-                  autoLoad={true}
                   fields='name,email,picture'
                   callback={this.responseFacebook}
+                  //onClick={this.responseFacebook}
                   cssClass='loginBtn loginBtn--facebook'
                   xfbml={true}
                 />
@@ -149,5 +154,5 @@ export default connect(mapStateToProps)(Log_in);
 //2245067805765444
 //1978366042223188
 //tnzjjgjjve_1540777059@tfbnw.net
-//1598753
+//123456123456
 //https://www.oauthlogin.com/documentation.html

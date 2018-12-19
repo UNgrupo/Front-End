@@ -1,12 +1,3 @@
-.title-l {
-    font-family: "Century Gothic";
-    font-weight: bold;
-}
-
-.inner-padding{
-    padding-top: 15px;
-}
-
 /* Shared */
 .loginBtn {
   
@@ -66,4 +57,13 @@
 .loginBtn--google:hover,
 .loginBtn--google:focus {
   background: #E74B37;
+}
+
+.button-log{
+  transition-duration: 1s;
+  transition-property: all;
+}
+
+.button-log:hover{
+  transform: scale(1.05);
 }

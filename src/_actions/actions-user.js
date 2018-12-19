@@ -28,7 +28,7 @@ function loginFacebook( token ){
             dispatch(success( 'Log success' ));
         })
         .catch(error =>{
-            dispatch( failure( "The facebook user is not registered din the page") );
+            dispatch( failure( "The facebook user is not registered in the page") );
         });
         document.body.classList.remove('busy-cursor');
         
@@ -37,7 +37,7 @@ function loginFacebook( token ){
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
     async function getUserIdByEmail( token ){
         document.body.classList.add('busy-cursor');
-        await axios.get(API_ROUTE + 'users.json', {headers: { 'Authorization': 'Bearer ' + token.accessToken }})
+        await axios.get(API_ROUTE + 'users', {headers: { 'Authorization': 'Bearer ' + token.accessToken }})
         .then(response => {
             response.data.data.map( user => {
                 if(user.attributes.email === token.email){
@@ -83,17 +83,20 @@ function login( user ){
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
     async function getUserIdByEmail( email, token ){
         document.body.classList.add('busy-cursor'); 
-        await axios.get(API_ROUTE + 'users.json', {headers: { 'Authorization': 'Bearer ' + token.jwt }})
+        await axios.get(API_ROUTE + 'users', {headers: { 'Authorization': 'Bearer ' + token.jwt }})
         .then(async response => {
             await response.data.data.map( user => {
                 if(user.attributes.email === email){
+                    console.log("Entro marica");
                     window.localStorage.setItem('user', JSON.stringify({...user, ...token, thumbs: {}}));
                 }
                 return null;
             });  
         })
         .catch(error => {
+            console.log(error.message);
             console.log(error.response);
+            console.log('Sigue fallando el get users');
         });
         console.log(window.localStorage);
         document.body.classList.remove('busy-cursor');

@@ -5,9 +5,11 @@ import Navbar from './Navbar.js';
 import Footer from './Footer.js';
 import Card from './Card.js';
 import Loading from './Loading.js';
+import Pagination from './Pagination.js';
 
 import topicActions from '../_actions/actions-topic';
 import subjectActions from '../_actions/actions-subject';
+import paginationActions from '../_actions/actions-pagination';
 
 import '../styles/Titles.css';
 
@@ -29,6 +31,8 @@ class Topic extends Component{
         
         await this.props.dispatch( subjectActions.getById( subject_id ) );
 
+        await this.props.dispatch( paginationActions.setPage( this.props.topic ) );
+
         await this.setState( {isDataLoaded: true} );
     }
     
@@ -37,11 +41,17 @@ class Topic extends Component{
         if( !this.state.isDataLoaded )
             return <Loading />
 
-        const topics = this.props.topic.map((topic, i) => {
+        const topics = this.props.pagination.map((topic, i) => {
             return(
                 <Card key={i} title={topic.attributes.name} description={topic.attributes.description} route={'/questions/' + topic.id} />
             );
         });
+
+        /*const topics = this.props.topic.map((topic, i) => {
+            return(
+                <Card key={i} title={topic.attributes.name} description={topic.attributes.description} route={'/questions/' + topic.id} />
+            );
+        });*/
         
         return(
             <div>
@@ -56,9 +66,10 @@ class Topic extends Component{
                         <div className='panel-body row'>
                         
                             {topics}
-                            <Card title='New topic' description={'Add a new topic to ' + this.props.subject.attributes.name} route={'/new_topic/' + this.props.match.params.subject_id} />
+                            <Card title='New topic' route={'/new_topic/' + this.props.match.params.subject_id} />
                             
                         </div>
+                        <Pagination data={this.props.topic}/>
                     </div>
                 </div>
                 
@@ -71,10 +82,11 @@ class Topic extends Component{
 }
 
 function mapStateToProps( state ){
-    const { topic, subject } = state;
+    const { topic, subject, pagination } = state;
     return {
         topic,
-        subject
+        subject,
+        pagination
     };
 }
 
