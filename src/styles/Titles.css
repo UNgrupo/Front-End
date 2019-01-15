@@ -79,6 +79,18 @@
     padding: 70px 50px 70px 50px;
   }
 
+/* css para el titulo de la pagina de busqueda */
+.title-search{
+    font-family: 'Pacifico', cursive;
+    font-size: 70px;
+    font-weight: bold;
+
+    color: rgb(99, 86, 86);
+
+    text-align: center;
+    text-rendering: optimizeLegibility;
+}
+
 /*  */
 .deepshadow{
     letter-spacing: .1em;

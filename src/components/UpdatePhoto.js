@@ -8,7 +8,9 @@ export default class UpdatePhoto extends Component{
         this.uploadWidget = this.uploadWidget.bind(this);
     }
 
-    uploadWidget() {
+    uploadWidget(e) {
+
+        e.preventDefault();
 
         const { callback, context } = this.props;
 
@@ -21,13 +23,8 @@ export default class UpdatePhoto extends Component{
             sources: [
                 'local',
                 'url',
-                'camera',
-                'image_search',
-                'facebook',
-                'dropbox',
-                'instagram'
+                'camera'
             ],
-            googleApiKey: '<image_search_google_api_key>',
             showAdvancedOptions: true,
             cropping: true,
             multiple: false,
@@ -63,7 +60,7 @@ export default class UpdatePhoto extends Component{
                 return ;
             }
 
-            callback(result, context);
+            callback(result[0].path, context);
         });
     }
     
@@ -72,7 +69,7 @@ export default class UpdatePhoto extends Component{
         const { buttonText, css } = this.props;
 
         return(
-            <button defaultValue={ buttonText } className={'btn ' + css} id='btnChangePicture' onClick={this.uploadWidget}>{buttonText}</button>
+            <button className={'btn ' + css} id='btnChangePicture' onClick={this.uploadWidget}>{buttonText}</button>
         );
     }
 

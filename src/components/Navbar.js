@@ -6,17 +6,31 @@ class Navbar extends Component {
     super(props);
     
     this.state = {
-      username: ''
+      username: '',
+      isDataLoaded: false
     };
   }
   
   componentDidMount(){
+
     this.setState({
-      username: JSON.parse(window.localStorage.getItem( 'user' )).attributes.usern
+      username: JSON.parse(window.localStorage.getItem( 'user' )).attributes.usern,
+      isDataLoaded: true
     });
   }
-  
+
+  search( e ){
+    e.preventDefault();
+
+    e.persist();
+
+    window.location.href = '/search/' + e.target[0].value;
+  }
+
   render() {
+
+    if( !this.state.isDataLoaded )
+      return <p></p>;
     
     return (
       <div className='container-fluid px-0 mx-0'>
@@ -24,9 +38,9 @@ class Navbar extends Component {
 
           <a href='/home'><span className='navbar-brand pl-2'><h4>Proyecto ungrupo</h4></span></a>
           
-          <form className='form-inline offset-md-4'>
+          <form className='form-inline offset-md-4' onSubmit={this.search}>
             <input className='form-control mr-2' type='search' placeholder='Search' aria-label='Search' />
-            <button className='btn btn-outline-success my-2 my-sm-0' type='submit'>Search</button>
+            <button className='btn btn-outline-success my-2 my-sm-0' type='submit' >Search</button>
           </form>
           
           <div className='collapse navbar-collapse offset-md-4' id='navbarSupportedContent'>

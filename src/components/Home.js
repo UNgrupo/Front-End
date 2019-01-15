@@ -18,7 +18,8 @@ class Home extends Component {
     super(props); 
 
     this.state = {
-      isDataLoaded: false
+      isDataLoaded: false,
+      actualUser: JSON.parse(window.localStorage.getItem('user'))
     };
   }
 
@@ -32,20 +33,15 @@ class Home extends Component {
   
   render() {
     
-    if( !this.state.isDataLoaded )
+    const { isDataLoaded, actualUser } = this.state;
+
+    if( !isDataLoaded )
       return <Loading />;
 
-    const subjectsPagination = this.props.pagination.map((subject, i) => {
+    const subjects = this.props.pagination.map((subject, i) => {
       const attribSubject = subject.attributes;
       return (
-        <Card key={i} title={attribSubject.name} route={'/topics/' + subject.id} />
-      );
-    });    
-
-    const subjects = this.props.subject.map((subject, i) => {
-      const attribSubject = subject.attributes;
-      return (
-        <Card key={i} title={attribSubject.name} route={'/topics/' + subject.id} />
+        <Card key={i} id={subject.id} title={attribSubject.name} route={'/topics/' + subject.id} user={actualUser} type='subject' canBeDeleted={true}/>
       );
     });
     
@@ -60,8 +56,8 @@ class Home extends Component {
               </div>
               <div className='container'>
                 <div className='panel-body row'>
-                
-                  {subjectsPagination}
+
+                  {subjects}
                   <Card title='New Subject' route='/new_subject'/>
                   
                 </div>

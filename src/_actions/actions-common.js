@@ -11,6 +11,40 @@ class Common {
     
     get getActions(){
         
+        const updateStatistics = (id) => { //ACA
+            switch( this.element ){
+                case 'answers':
+                    axios.patch(API_ROUTE + this.element + '/' + id , data, {headers: authHeader()})
+                    .then(res => {
+
+                    })
+                    .catch(error=>{
+
+                    });
+                    return;
+                case 'questions':
+                    axios.patch()
+                    .then(res => {
+                        
+                    })
+                    .catch(error=>{
+
+                    });
+                    return;
+                case 'comments':
+                    axios.patch()
+                    .then(res => {
+                        
+                    })
+                    .catch(error=>{
+
+                    });
+                    return;
+                default: 
+                    return;
+            }
+        };
+
         const getAll = () => {
             const auxElement = this.element.toUpperCase();
         

@@ -11,6 +11,8 @@ import questionActions from '../_actions/actions-question';
 import userActions from '../_actions/actions-user';
 import paginationActions from '../_actions/actions-pagination';
 
+import CLOUDINARY_PATH from '../_helpers/Cloudinary-path';
+
 import '../styles/Questions.css';
 import '../styles/Titles.css';
 
@@ -68,7 +70,11 @@ class Questions extends Component {
                       deleteFunction={() => {this.deleteQuestion(question.id)}}
                     />
 
-    return (parseInt(this.state.user.id,10) === parseInt(question.attributes['user-id'],10) ? _delete : '');
+    const { user } = this.state;
+    const lookIdMatch = parseInt(user.id,10) === parseInt(question.attributes['user-id'],10);
+    const lookAdminMatch = user.attributes.role === 'admin';
+    
+    return (lookIdMatch || lookAdminMatch ? _delete : '');
   }
   
   render() {
@@ -79,6 +85,9 @@ class Questions extends Component {
     const questions = this.props.pagination.map((question, i) => {
     
       const username = this.props.user[question.attributes['user-id']-1].attributes.usern;
+      const user = this.props.user[question.attributes['user-id']-1];
+
+      const photo = CLOUDINARY_PATH + ( user.attributes.ruta ? user.attributes.ruta : 'v1545351717/Ungrupo/User_icon_2.svg.png' );
     
       return (
       
@@ -92,7 +101,7 @@ class Questions extends Component {
             </div>
             <div className='row mx-2'>
               <a href={'/' + username} className='mr-2'>
-                <img src={'https://source.unsplash.com/random/30x30?sig=' + this.props.user[question.attributes['user-id']-1].id} alt={username} className='rounded-circle' />
+                <img src={photo} className='rounded-circle img-profile-questions' />
               </a>
               <a href={'/' + username} className='mr-2 mt-1'>{username}</a>
               <div className='mt-1'>{question.attributes.date}</div>

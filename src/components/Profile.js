@@ -6,7 +6,9 @@ import userActions from '../_actions/actions-user';
 import questionActions from '../_actions/actions-question';
 import commentActions from '../_actions/actions-comment';
 import answerActions from '../_actions/actions-answer';
+
 import isActualUser from '../_helpers/Is-actual-user';
+import CLOUDINARY_PATH from '../_helpers/Cloudinary-path';
 
 import Statistics from './Statistics';
 import Navbar from './Navbar';
@@ -31,7 +33,6 @@ class Profile extends Component {
         };
         
         this.changeTab = this.changeTab.bind(this);
-        this.updatePhoto = this.updatePhoto.bind(this);
         this.inputOpenFileRef = React.createRef();
         this.uploadWidget = this.uploadWidget.bind(this);
         this.deleteUser = this.deleteUser.bind(this);
@@ -103,9 +104,9 @@ class Profile extends Component {
             folder: 'Ungrupo'},
 
             async function(error, result) {
-                
+
                 const data = {
-                    photo: result.public_id,
+                    ruta: result[0].path
                 };
 
                 _this.setState( {isDataLoaded: false} );
@@ -116,14 +117,6 @@ class Profile extends Component {
 
                 _this.setState( {isDataLoaded: true} );
         });
-    }
-    
-    updatePhoto(e){
-        e.preventDefault();
-        var file = e.target.files[0];
-        console.log(file);
-        var form = new FormData();
-        form.append('file', this.state.file);
     }
 
     deleteUser(){
@@ -163,8 +156,14 @@ class Profile extends Component {
                 </div>
             );
         });
-        
-        const { question, answer, comment } = this.props;
+
+        const { question, answer, comment, user } = this.props;
+
+        console.log(user);
+
+        const hide = ( !this.state.isUserLogged ? ' d-none' : '');
+
+        const photo = CLOUDINARY_PATH + ( user.attributes.ruta ? user.attributes.ruta : 'v1545351717/Ungrupo/User_icon_2.svg.png' );
         
         let activityQuestion = question.map( (question_i, i) => {
             return(
@@ -206,8 +205,6 @@ class Profile extends Component {
                 </div>
             );
         });
-            
-        const hide = ( !this.state.isUserLogged ? ' d-none' : '');
         
         return (
             <div>
@@ -220,22 +217,13 @@ class Profile extends Component {
                             <div className='card p-5 m-5'>
                                 <div className='card-body'>
                                     <div className='card-title mb-4'>
-                                        <div className='d-flex justify-content-start'>
-                                            <form >
-                                            </form>
+                                        <div className='d-flex flex-row'>
                                             <div className='image-container'>
-                                                <img src='https://source.unsplash.com/random/150x150' alt='profile' id='imgProfile' className='img-thumbnail' />
-                                                <div className='middle'>
-                                                    <button defaultValue='Change' className={'btn btn-secondary btn-block' + hide} id='btnChangePicture' onClick={this.uploadWidget}>Update</button>
-                                                    {/*<input type='button' className={'btn btn-secondary btn-block' + hide} id='btnChangePicture' value='Change' onClick={()=>{this.upload.click()}}/>*/}
-                                                    {/*<input type='file' className='d-none' id='profilePicture' name='file' onChange={this.updatePhoto} ref={(ref) => this.upload = ref}/>*/}
-                                                </div>
+                                                <img src={photo} alt='profile' id='imgProfile' className='img-thumbnail img-profile' />
+                                                <button className={'btn btn-secondary btn-block' + hide} id='btnChangePicture' onClick={this.uploadWidget}>Update</button>
                                             </div>
-                                            <div className='ml-3 mt-5'>
-                                                <h1 className='d-block'>{this.props.user.attributes.usern}</h1>
-                                            </div>
-                                            <div className='ml-auto'>
-                                                <input type='button' className='btn btn-primary d-none' id='btnDiscard' value='Discard Changes'/>
+                                            <div className='align-self-center ml-5 pl-5'>
+                                                <h1 className='d-block user-profile'>{this.props.user.attributes.usern}</h1>
                                             </div>
                                         </div>
                                     </div>

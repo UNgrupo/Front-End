@@ -19,7 +19,8 @@ class Topic extends Component{
         super(props);
         
         this.state = {
-            isDataLoaded: false
+            isDataLoaded: false,
+            actualUser: JSON.parse(window.localStorage.getItem('user'))
         };
     }
 
@@ -42,16 +43,11 @@ class Topic extends Component{
             return <Loading />
 
         const topics = this.props.pagination.map((topic, i) => {
+            const { actualUser } = this.state;
             return(
-                <Card key={i} title={topic.attributes.name} description={topic.attributes.description} route={'/questions/' + topic.id} />
+                <Card key={i} id={topic.id} title={topic.attributes.name} route={'/questions/' + topic.id} user={actualUser} type='topic' canBeDeleted={true}/>
             );
         });
-
-        /*const topics = this.props.topic.map((topic, i) => {
-            return(
-                <Card key={i} title={topic.attributes.name} description={topic.attributes.description} route={'/questions/' + topic.id} />
-            );
-        });*/
         
         return(
             <div>

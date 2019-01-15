@@ -30,13 +30,14 @@ class Sign_up extends Component {
           email: '', 
           submitted: false, 
           matchPasswords: true,
-          photo: ''
+          ruta: ''
         };
         
         this.handlePassword = this.handlePassword.bind(this);
         this.handleConfirmPassword = this.handleConfirmPassword.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.getPhoto = this.getPhoto.bind(this);
     }
     
   async handleSubmit(e){
@@ -49,7 +50,7 @@ class Sign_up extends Component {
     const password = e.target.elements.password.value;
     const confirmPassword = e.target.elements.confirmPassword.value;
     const isEmailValid = confirmEmail( email );
-    const { photo } = this.state;
+    const { ruta } = this.state;
     
     if( confirmPassword !== password ){
       this.setState({
@@ -73,7 +74,7 @@ class Sign_up extends Component {
       reputation: 'Bronze V',
       role: 'student',
       'number-of-followers': 0,
-      photo: null
+      ruta
     };
     
     const {dispatch} = this.props;
@@ -113,12 +114,12 @@ class Sign_up extends Component {
   }
 
   getPhoto(photo, context){
-    context.setState({photo});
+    context.setState({ruta: photo});
   }
   
   render() {
     
-    const {submitted, matchPasswords, confirmPassword, password, username, name, email, isEmailValid, photo} = this.state;
+    const {submitted, matchPasswords, confirmPassword, password, username, name, email, isEmailValid, ruta} = this.state;
     let emailError = '', nameError = '', usernError = '';
     if( this.props.authentication.data.data ){
       emailError = this.props.authentication.data.data.email;
@@ -128,8 +129,6 @@ class Sign_up extends Component {
     
     if( this.props.authentication.logged_in )
       window.location.href = '/home';
-    
-    console.log(photo);
 
     return (
       <div>
@@ -170,9 +169,10 @@ class Sign_up extends Component {
                 { submitted && !matchPasswords && <div><small>Passwords doesnt match</small></div> }
                 { submitted && !confirmPassword && <div><small>Confirm password is required</small></div> }
               </div>
-              <div className={'form-group custom-file' + (submitted && (!photo) ? ' has-error': '')}>
-                <UpdatePhoto callback={this.getPhoto} context={this} buttonText='Upload a photo' css='custom-file-input' id="customFileLang"/>
-                <label class="custom-file-label" for="customFileLang">{(!photo ? 'No selected photo' : photo)}</label>
+              <label>Select a photo: </label>
+              <div className={'custom-file' + (submitted && (!ruta) ? ' has-error': '')}>
+                <UpdatePhoto callback={this.getPhoto} context={this} buttonText='Upload a photo' css='custom-file-input'/>
+                <label className="custom-file-label" htmlFor="customFileLang">{(!ruta ? 'No selected photo' : ruta)}</label>
               </div>
               <div className='pt-4'>
                 <input type='submit' className='btn btn-success btn-block button-log' value='Sign me up!' />

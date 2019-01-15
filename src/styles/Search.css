@@ -1,0 +1,21 @@
+.text-style{
+    font-size: 20px;
+    font-style: italic;
+    
+}
+
+.txt-style{
+    color: darkgray;
+}
+
+.img-style{
+    position: relative;
+    
+    width: 40px;
+    height: 40px;
+}
+
+.a-s{
+    text-decoration: none;
+    color: black;
+}

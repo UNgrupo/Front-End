@@ -10,6 +10,7 @@ import topicReducer from './reducer-topic';
 import statisticReducer from './reducer-statistic';
 import photoReducer from './reducer-photo';
 import paginationReducer from './reducer-pagination';
+import searchReducer from './reducer-search';
 
 const allReducers = combineReducers({
     user: userReducer,
@@ -21,7 +22,8 @@ const allReducers = combineReducers({
     topic: topicReducer,
     statistic: statisticReducer,
     photo: photoReducer,
-    pagination: paginationReducer
+    pagination: paginationReducer,
+    search: searchReducer
 });
 
 export default allReducers;
