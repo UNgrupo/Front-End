@@ -36,25 +36,31 @@ class App extends Component {
     const headersSlides = ['Colaboración', 'Compañerismo', 'Estudio'];
 
     return (
-      <div>
+      <div >
 
-        <h1 className='title-home deepshadow'>Proyecto ungrupo</h1>
-        
-        <CarouselComp photos={this.props.photo} height={'500px'} captionHeader={headersSlides} captionText={['','','']} /> 
+        <div className='padding-intro'>
 
-        <div className='mx-5'>
-          <div className='padding-intro'>
-            <p className='text-intro'>Proyecto ungrupo es creado con el fin de tener un espacio en el cual la comunidad academica 
-              incluyendo estudiantes y profesores puedan interactuar entre ellos con el fin de hacer más dinamico y facil el aprendizaje</p>
-            <div className='row mb-4'>
-              <div className='col text-right'>
-                <a href='/log_in'><button className='custom-button'>Log in</button></a> 
-              </div>
-              <div className='col'>
-                <a href='/sign_up'><button className='custom-button'>Sign up</button></a>
+          <h1 className='title-home deepshadow'>PROYECTO UNGRUPO</h1>
+          
+          <div className='px-5 mx-2'>
+            <CarouselComp photos={this.props.photo} height={'500px'} captionHeader={headersSlides} captionText={['','','']} /> 
+          </div>
+
+          <div className='mx-5'>
+            <div>
+              <p className='text-intro'>Proyecto ungrupo es creado con el fin de tener un espacio en el cual la comunidad academica 
+                incluyendo estudiantes y profesores puedan interactuar entre ellos con el fin de hacer más dinamico y facil el aprendizaje</p>
+              <div className='row mb-4'>
+                <div className='col text-right'>
+                  <a href='/log_in'><button className='custom-button'>Log in</button></a> 
+                </div>
+                <div className='col'>
+                  <a href='/sign_up'><button className='custom-button'>Sign up</button></a>
+                </div>
               </div>
             </div>
           </div>
+
         </div>
 
         <Footer />

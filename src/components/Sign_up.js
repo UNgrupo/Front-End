@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import Footer from './Footer.js';
+import UpdatePhoto from './UpdatePhoto.js';
 
 import {testPassword} from '../scripts/testPassword.js';
-
 import confirmEmail from '../scripts/confirmEmail.js';
+
 import userActions from '../_actions/actions-user.js';
 
 import '../styles/Titles.css';
 import '../styles/Form.css';
+import '../styles/Log-in.css';
 
 class Sign_up extends Component {
   
@@ -27,13 +29,15 @@ class Sign_up extends Component {
           username: '',
           email: '', 
           submitted: false, 
-          matchPasswords: true
+          matchPasswords: true,
+          ruta: ''
         };
         
         this.handlePassword = this.handlePassword.bind(this);
         this.handleConfirmPassword = this.handleConfirmPassword.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.getPhoto = this.getPhoto.bind(this);
     }
     
   async handleSubmit(e){
@@ -46,6 +50,7 @@ class Sign_up extends Component {
     const password = e.target.elements.password.value;
     const confirmPassword = e.target.elements.confirmPassword.value;
     const isEmailValid = confirmEmail( email );
+    const { ruta } = this.state;
     
     if( confirmPassword !== password ){
       this.setState({
@@ -69,7 +74,7 @@ class Sign_up extends Component {
       reputation: 'Bronze V',
       role: 'student',
       'number-of-followers': 0,
-      photo: null
+      ruta
     };
     
     const {dispatch} = this.props;
@@ -107,10 +112,14 @@ class Sign_up extends Component {
       submitted: false
     } );
   }
+
+  getPhoto(photo, context){
+    context.setState({ruta: photo});
+  }
   
   render() {
     
-    const {submitted, matchPasswords, confirmPassword, password, username, name, email, isEmailValid} = this.state;
+    const {submitted, matchPasswords, confirmPassword, password, username, name, email, isEmailValid, ruta} = this.state;
     let emailError = '', nameError = '', usernError = '';
     if( this.props.authentication.data.data ){
       emailError = this.props.authentication.data.data.email;
@@ -120,7 +129,7 @@ class Sign_up extends Component {
     
     if( this.props.authentication.logged_in )
       window.location.href = '/home';
-    
+
     return (
       <div>
         <h1 className='title-proyect deepshadow'>Proyecto ungrupo</h1>
@@ -160,8 +169,13 @@ class Sign_up extends Component {
                 { submitted && !matchPasswords && <div><small>Passwords doesnt match</small></div> }
                 { submitted && !confirmPassword && <div><small>Confirm password is required</small></div> }
               </div>
+              <label>Select a photo: </label>
+              <div className={'custom-file' + (submitted && (!ruta) ? ' has-error': '')}>
+                <UpdatePhoto callback={this.getPhoto} context={this} buttonText='Upload a photo' css='custom-file-input'/>
+                <label className="custom-file-label" htmlFor="customFileLang">{(!ruta ? 'No selected photo' : ruta)}</label>
+              </div>
               <div className='pt-4'>
-                <input type='submit' className='btn btn-success btn-block active' value='Sign me up!' />
+                <input type='submit' className='btn btn-success btn-block button-log' value='Sign me up!' />
               </div>
               <div className='pt-4 text-center'>
                 <a href='/log_in'>Want to log in?</a>

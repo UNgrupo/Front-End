@@ -50,8 +50,12 @@ class Update_profile extends Component{
           updateInfo.name = name;
           
         if( password || username || name ){
-          await this.props.dispatch( userActions.update( JSON.parse(window.localStorage.getItem('user')).id, updateInfo ) );
+          const user = JSON.parse(window.localStorage.getItem('user'))
+          await this.props.dispatch( userActions.update( user.id, updateInfo ) );
           if( this.props.user === 'USER updated' ){
+            user.attributes.name = ( name ? name : user.attributes.name);
+            user.attributes.usern = ( username ? username : user.attributes.usern);
+            await window.localStorage.setItem('user', JSON.stringify(user));
             (window.location.href = '/home');
           }
           await this.setState({

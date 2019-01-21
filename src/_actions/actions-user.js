@@ -2,7 +2,9 @@ import axios from 'axios';
 
 import authHeader from '../_helpers/Auth-header.js';
 import API_ROUTE from '../_helpers/Route-api';
+
 import Common from './actions-common';
+import statisticActions from './actions-statistic';
 
 const element = 'users';
 const commonActions = new Common(element);
@@ -28,7 +30,7 @@ function loginFacebook( token ){
             dispatch(success( 'Log success' ));
         })
         .catch(error =>{
-            dispatch( failure( "The facebook user is not registered din the page") );
+            dispatch( failure( "The facebook user is not registered in the page") );
         });
         document.body.classList.remove('busy-cursor');
         
@@ -37,7 +39,7 @@ function loginFacebook( token ){
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
     async function getUserIdByEmail( token ){
         document.body.classList.add('busy-cursor');
-        await axios.get(API_ROUTE + 'users.json', {headers: { 'Authorization': 'Bearer ' + token.accessToken }})
+        await axios.get(API_ROUTE + 'users', {headers: { 'Authorization': 'Bearer ' + token.accessToken }})
         .then(response => {
             response.data.data.map( user => {
                 if(user.attributes.email === token.email){
@@ -83,20 +85,44 @@ function login( user ){
     function failure(error) { return { type: 'LOGIN-FAILURE', data: error } }
     async function getUserIdByEmail( email, token ){
         document.body.classList.add('busy-cursor'); 
-        await axios.get(API_ROUTE + 'users.json', {headers: { 'Authorization': 'Bearer ' + token.jwt }})
+        await axios.get(API_ROUTE + 'users', {headers: { 'Authorization': 'Bearer ' + token.jwt }})
         .then(async response => {
-            await response.data.data.map( user => {
+            await response.data.data.map( async user => {
                 if(user.attributes.email === email){
                     window.localStorage.setItem('user', JSON.stringify({...user, ...token, thumbs: {}}));
+                    await addStatistic( user.id, {headers: { 'Authorization': 'Bearer ' + token.jwt }} );
                 }
                 return null;
             });  
         })
         .catch(error => {
-            console.log(error.response);
+            console.log(error.message);
         });
         console.log(window.localStorage);
         document.body.classList.remove('busy-cursor');
+    }
+    async function addStatistic( id, header ){
+        await axios.get( API_ROUTE + 'statistics/' + id, header )
+        .then()
+        .catch( async error => {
+            const newStatistic = {
+                "statistic": {
+                    "points": 0,
+                    "number_of_questions": 0,
+                    "number_of_answers": 0,
+                    "number_of_best_answers": 0,
+                    "user_id": id
+                }
+            }
+
+            await axios.post( API_ROUTE + 'statistics', newStatistic, header )
+            .then( response => {
+                console.log( 'statistics created' );
+            })
+            .catch(error => {
+                console.log( error.message );
+            });
+        });
     }
 }
 
@@ -148,9 +174,9 @@ function signUp(user){
         
         document.body.classList.add('busy-cursor');
         await axios.post(API_ROUTE + 'users', newUser)
-        .then(response => {
-            dispatch(success('User added succesfully'));
-            dispatch( login( user ) );
+        .then(async response => {
+            await dispatch( login( user ) );
+            await dispatch( success('User added succesfully') );
         })
         .catch(error => {
             dispatch(failure(error.response));

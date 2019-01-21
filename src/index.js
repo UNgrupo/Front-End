@@ -25,12 +25,7 @@ import New_question from './components/New_question';
 import Question from './components/Question';
 import Profile from './components/Profile';
 import Update_profile from './components/Update_profile';
-/*
-import Settings_profile from './components/Settings_profile';
-import Activity from './components/Activity';
-import Stadistics from './components/Stadistics';
-import Profile_questioner from './components/Profile_questioner';
-*/
+import SearchItems from './components/SearchItems';
 
 const loggerMiddleware = createLogger();
 
@@ -62,6 +57,7 @@ ReactDOM.render(
                 <Route exact path='/home' component={Home}/>
                 <Route exact path='/new_subject' component={New_subject}/>
                 <Route exact path='/:username' component={Profile}/>
+                <Route exact path='/search/:textToMatch' component={SearchItems}/>
                 <Route exact path="/topics/:subject_id" component={Topic} />
                 <Route exact path='/new_topic/:subject_id' component={New_topic}/>
                 <Route exact strict path='/questions/:topic_id' component={Questions}/>

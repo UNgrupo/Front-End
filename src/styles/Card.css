@@ -1,0 +1,27 @@
+.card-style{
+    background-color: #3A3333;
+    color: white;
+    font-size: 26px;
+    text-transform: capitalize;
+    text-align: center;
+    font-family: 'Crimson Text', serif;
+
+    transition-duration: 3s;
+}
+
+.card-style :hover{
+    background-color: rgba(255, 255, 255, 0.295);
+}
+
+.card-style img:hover{
+    transform: rotateY(390grad);
+}
+
+.no-decoration{
+    text-decoration: none;
+}
+
+.no-decoration a:hover, a:visited, a:link, a:active{
+    text-decoration: none;
+}
+/* https://github.com/IanLunn/Hover */

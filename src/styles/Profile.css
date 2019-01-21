@@ -6,3 +6,19 @@
 .border-solid-activity{
     border: 0.5px solid lightgrey;
 }
+
+.img-profile{
+    width: 200px;
+    height: 200px;
+
+    position: relative;
+}
+
+.user-profile{
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 60px;
+
+    color: darkslategray;
+
+    font-weight: bold;
+}

@@ -11,7 +11,14 @@ text-decoration: none;
 }
 
 .margin-questions{
-    margin: 0% 30%;
+    margin: 0% 20%;
     font-family: 'Pacifico', cursive;
     font-size: 25px;
+}
+
+.img-profile-questions{
+    width: 40px;
+    height: 40px;
+
+    position: relative;
 }

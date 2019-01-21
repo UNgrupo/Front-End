@@ -1,3 +1,4 @@
 export default function isActualUser( userId ){
-    return ( userId === JSON.parse(window.localStorage.getItem('user')).id );
+    const user = JSON.parse(window.localStorage.getItem('user'));
+    return ( userId === user.id || user.attributes.role === 'admin' );
 }

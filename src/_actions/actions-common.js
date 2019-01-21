@@ -11,6 +11,31 @@ class Common {
     
     get getActions(){
         
+        const updateStatistics = ( id, element ) => { //ACA
+            switch( element ){
+                case 'answers':
+                    makeUpdate( id, 'number_of_answers' );
+                    return;
+                case 'questions':
+                    makeUpdate( id, 'number_of_questions' );
+                    return;
+                default:
+                    return;
+                }
+            function makeUpdate( id, attribute ){
+                axios.get(API_ROUTE + 'statistics/' + id, {headers: authHeader()})
+                .then(statistic => {
+                    let newStatistic = {};
+                    if( attribute === 'number_of_questions')
+                        newStatistic = { 'number_of_questions': statistic.data.data.attributes['number-of-questions'] + 1 };
+                    else
+                        newStatistic = { 'number_of_answers': statistic.data.data.attributes['number-of-answers'] + 1 };
+                    axios.patch(API_ROUTE + 'statistics/' + id , newStatistic, {headers: authHeader()});
+                
+                });
+            };
+        };
+
         const getAll = () => {
             const auxElement = this.element.toUpperCase();
         
@@ -85,8 +110,10 @@ class Common {
             return async dispatch => {
                 document.body.classList.add('busy-cursor');
                 await axios.post(API_ROUTE + this.element, objectToAdd, {headers: authHeader()})
-                .then(response => {
-                    dispatch( success( capitalizedAuxElement + ' added' ) );
+                .then(async response => {
+                    const user = JSON.parse(window.localStorage.getItem('user'));
+                    await updateStatistics( user.id, this.element);
+                    await dispatch( success( capitalizedAuxElement + ' added' ) );
                 })
                 .catch(error => {
                     dispatch( failure( error.response ) );

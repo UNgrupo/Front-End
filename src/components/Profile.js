@@ -1,17 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import userActions from '../_actions/actions-user';
 import questionActions from '../_actions/actions-question';
 import commentActions from '../_actions/actions-comment';
 import answerActions from '../_actions/actions-answer';
+
 import isActualUser from '../_helpers/Is-actual-user';
+import CLOUDINARY_PATH from '../_helpers/Cloudinary-path';
 
 import Statistics from './Statistics';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import Navbar from './Navbar';
+import Footer from './Footer';
 import Loading from './Loading.js';
 import ShowText from './ShowText.js';
+import DeleteItem from './DeleteItem.js';
 
 import '../styles/Profile.css';
 
@@ -29,8 +33,9 @@ class Profile extends Component {
         };
         
         this.changeTab = this.changeTab.bind(this);
-        this.updatePhoto = this.updatePhoto.bind(this);
         this.inputOpenFileRef = React.createRef();
+        this.uploadWidget = this.uploadWidget.bind(this);
+        this.deleteUser = this.deleteUser.bind(this);
     }
     
     async componentDidMount(){
@@ -46,14 +51,82 @@ class Profile extends Component {
         await dispatch( commentActions.getAllByForeanId( this.props.user.id, 'user' ) );
 
         await this.setState( {isDataLoaded: true} );
+
+        console.log( this.props.user );
     }
-    
-    updatePhoto(e){
-        e.preventDefault();
-        var file = e.target.files[0];
-        console.log(file);
-        var form = new FormData();
-        form.append('file', this.state.file);
+
+    uploadWidget() {
+
+        const { dispatch, user } = this.props;
+        const { username } = this.props.match.params;
+        const _this = this;
+
+        window.cloudinary.setAPIKey('541149863476823');
+        window.cloudinary.openUploadWidget({ 
+            cloud_name: 'dvuxpp54w', 
+            upload_preset: 'ungrupo',
+            sources: [
+                'local',
+                'url',
+                'camera',
+                'image_search',
+                'facebook',
+                'dropbox',
+                'instagram'
+            ],
+            googleApiKey: '<image_search_google_api_key>',
+            showAdvancedOptions: true,
+            cropping: true,
+            multiple: false,
+            defaultSource: 'local',
+            styles: {
+                palette: {
+                    window: '#FFFFFF',
+                    windowBorder: '#90A0B3',
+                    tabIcon: '#0078FF',
+                    menuIcons: '#5A616A',
+                    textDark: '#000000',
+                    textLight: '#FFFFFF',
+                    link: '#0078FF',
+                    action: '#D84C00',
+                    inactiveTabIcon: '#0E2F5A',
+                    error: '#F44235',
+                    inProgress: '#0078FF',
+                    complete: '#20B832',
+                    sourceBg: '#E4EBF1'
+                },
+                fonts: {
+                    default: {
+                        active: true
+                    }
+                }
+            },
+            folder: 'Ungrupo'},
+
+            async function(error, result) {
+
+                const data = {
+                    ruta: result[0].path
+                };
+
+                _this.setState( {isDataLoaded: false} );
+
+                await dispatch( userActions.update( user.id, data ) );
+
+                await dispatch( userActions.getUserByUsername( username ) );
+
+                _this.setState( {isDataLoaded: true} );
+        });
+    }
+
+    deleteUser(){
+
+        const { dispatch, user } = this.props;
+
+        dispatch( userActions.delete( user.id ) );
+
+        //window.location.replace('/');
+
     }
     
     changeTab(navItem){
@@ -83,8 +156,14 @@ class Profile extends Component {
                 </div>
             );
         });
-        
-        const { question, answer, comment } = this.props;
+
+        const { question, answer, comment, user } = this.props;
+
+        console.log(user);
+
+        const hide = ( !this.state.isUserLogged ? ' d-none' : '');
+
+        const photo = CLOUDINARY_PATH + ( user.attributes.ruta ? user.attributes.ruta : 'v1545351717/Ungrupo/User_icon_2.svg.png' );
         
         let activityQuestion = question.map( (question_i, i) => {
             return(
@@ -126,8 +205,6 @@ class Profile extends Component {
                 </div>
             );
         });
-            
-        const hide = ( !this.state.isUserLogged ? ' d-none' : '');
         
         return (
             <div>
@@ -140,21 +217,13 @@ class Profile extends Component {
                             <div className='card p-5 m-5'>
                                 <div className='card-body'>
                                     <div className='card-title mb-4'>
-                                        <div className='d-flex justify-content-start'>
-                                            <form >
-                                            </form>
+                                        <div className='d-flex flex-row'>
                                             <div className='image-container'>
-                                                <img src='https://source.unsplash.com/random/150x150' alt='profile' id='imgProfile' className='img-thumbnail' />
-                                                <div className='middle'>
-                                                    <input type='button' className={'btn btn-secondary btn-block' + hide} id='btnChangePicture' value='Change' onClick={()=>{this.upload.click()}}/>
-                                                    <input type='file' className='d-none' id='profilePicture' name='file' onChange={this.updatePhoto} ref={(ref) => this.upload = ref}/>
-                                                </div>
+                                                <img src={photo} alt='profile' id='imgProfile' className='img-thumbnail img-profile' />
+                                                <button className={'btn btn-secondary btn-block' + hide} id='btnChangePicture' onClick={this.uploadWidget}>Update</button>
                                             </div>
-                                            <div className='ml-3 mt-5'>
-                                                <h1 className='d-block'>{this.props.user.attributes.usern}</h1>
-                                            </div>
-                                            <div className='ml-auto'>
-                                                <input type='button' className='btn btn-primary d-none' id='btnDiscard' value='Discard Changes'/>
+                                            <div className='align-self-center ml-5 pl-5'>
+                                                <h1 className='d-block user-profile'>{this.props.user.attributes.usern}</h1>
                                             </div>
                                         </div>
                                     </div>
@@ -162,22 +231,30 @@ class Profile extends Component {
                                         <div className='col-12'>
                                             <ul className='nav nav-tabs mb-4' id='myTab' role='tablist'>
                                                 <li className='nav-item' id='basicInfo-tab' name='basicInfo-tab' onClick={() => {this.changeTab('basicInfo-tab');}}>
-                                                    <a className={'nav-link' + (this.state.activeTab === 'basicInfo-tab' ? ' active' : '')} id='basicInfo-tab' name='basicInfo-tab' href='#basicInfo'>Basic Info</a>
+                                                    <Link className={'nav-link' + (this.state.activeTab === 'basicInfo-tab' ? ' active' : '')} id='basicInfo-tab' name='basicInfo-tab' to="#basicInfo" replace >Basic Info</Link>
                                                 </li>
                                                 <li className='nav-item' id='stadistics-tab' name='stadistics-tab' onClick={() => {this.changeTab('stadistics-tab');}}>
-                                                    <a className={'nav-link' + (this.state.activeTab === 'stadistics-tab' ? ' active' : '')} id='stadistics-tab' name='stadistics-tab' href='#stadistics'>Stadistics</a>
+                                                    <Link className={'nav-link' + (this.state.activeTab === 'stadistics-tab' ? ' active' : '')} id='stadistics-tab' name='stadistics-tab' to="#stadistics" replace >Stadistics</Link>
                                                 </li>
                                                 <li className='nav-item' id='activity-tab' name='activity-tab' onClick={() => {this.changeTab('activity-tab');}}>
-                                                    <a className={'nav-link' + (this.state.activeTab === 'activity-tab' ? ' active' : '')} id='activity-tab' name='activity-tab' href='#activity'>Activity</a>
+                                                    <Link className={'nav-link' + (this.state.activeTab === 'activity-tab' ? ' active' : '')} id='activity-tab' name='activity-tab' to="#activity" replace >Activity</Link>
                                                 </li>
                                                 <li className={'nav-item'} id='documents-tab' name='documents-tab' onClick={() => {this.changeTab('documents-tab');}}>
-                                                    <a className={'nav-link' + (this.state.activeTab === 'documents-tab' ? ' active' : '')} id='documents-tab' name='documents-tab' href='#documents'>Documents</a>
+                                                    <Link className={'nav-link' + (this.state.activeTab === 'documents-tab' ? ' active' : '')} id='documents-tab' name='documents-tab' to="#documents" replace >Documents</Link>
                                                 </li>
                                             </ul>
                                             <div className='tab-content ml-1' id='myTabContent'>
                                                 <div className={'tab-pane fade' + (this.state.activeTab === 'basicInfo-tab' ? ' show active' : '')} id='basicInfo-tab'>
                                                     {attribUser}
-                                                    <a href='/my_profile/update'><button className={'btn btn-secondary' + hide}>Update Profile</button></a>
+                                                    <div className='row d-flex justify-content-between mx-2'>
+                                                        <a href='/my_profile/update'><button className={'btn btn-primary' + hide}>Update Profile</button></a>
+                                                        <DeleteItem 
+                                                            textModal='Are you sure you want to delete your account?' 
+                                                            titleModal={'Delete ' + this.props.user.attributes.usern} 
+                                                            item={<button className={'btn btn-danger ' + hide}>Delete Profile</button>} 
+                                                            deleteFunction={this.deleteUser} 
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <div className={'tab-pane fade' + (this.state.activeTab === 'stadistics-tab' ? ' show active' : '')} id='stadistics-tab'>
                                                    <Statistics />

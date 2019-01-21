@@ -6,8 +6,11 @@ import Footer from './Footer.js';
 import RichTextEditor from './RichTextEditor.js';
 import ShowText from './ShowText.js';
 import Loading from './Loading.js';
+import DeleteItem from './DeleteItem.js';
 
 import sortAlgorithms from '../scripts/orderData';
+
+import CLOUDINARY_PATH from '../_helpers/Cloudinary-path';
 
 import userActions from '../_actions/actions-user';
 import questionActions from '../_actions/actions-question';
@@ -77,7 +80,7 @@ class Question extends Component{
 
         /* Cambia los el diccionario de thumbs para saber si el usuario ha seleccionado que le gusta o no una respuesta */
         const actualUser = this.state.actualUser;
-        actualUser.thumbs[answer.id] = (actualUser.thumbs[answer.id] !== null ? actualUser.thumbs[answer.id] + number : number);
+        actualUser.thumbs[answer.id] = (actualUser.thumbs[answer.id] !== null ? (actualUser.thumbs[answer.id]) + number : number);
 
         window.localStorage.setItem('user', JSON.stringify(actualUser));
         this.setState({actualUser});
@@ -102,12 +105,23 @@ class Question extends Component{
     
     canUserDrop(elem, type){
       
-        const trashIcon = <span className='d-flex justify-content-end clickable' onClick={() => {this.deleteQuestion(elem.id, type)}}>
+        const trashIcon = <span className='d-flex justify-content-end clickable'>
                             <i className="fas fa-trash-alt"></i>
                           </span>
+
+        const _delete = <DeleteItem 
+                            item={trashIcon} 
+                            textModal='Are you sure that you want to delete this question?' 
+                            titleModal='Delete Question' 
+                            deleteFunction={() => {this.deleteQuestion(elem.id, type)}}
+                        />
+
+        const { actualUser } = this.state;
+        const lookIdMatch = parseInt(actualUser.id,10) === parseInt(elem.attributes['user-id'],10);
+        const lookAdminMatch = actualUser.attributes.role === 'admin';
         
-        return (parseInt(this.state.actualUser.id,10) === parseInt(elem.attributes['user-id'],10) ? trashIcon : '');
-      }
+        return (lookIdMatch || lookAdminMatch ? _delete : '');
+    }
       
     async deleteQuestion(id, type){
          await this.setState( {isDataLoaded: false} );
@@ -184,7 +198,7 @@ class Question extends Component{
 
         if( !this.state.isDataLoaded )
             return <Loading />
-        
+
         const propsComment = this.props.comment;
         let comments = [];
         for(let i=0; i<propsComment.length; i++){
@@ -192,11 +206,12 @@ class Question extends Component{
                 propsComment[i] !== undefined ? 
                 propsComment[i].map(comment => {
                     const userComment = this.props.user[comment.attributes['user-id']-1].attributes;
+                    const photo = CLOUDINARY_PATH + ( userComment.ruta ? userComment.ruta : 'v1545351717/Ungrupo/User_icon_2.svg.png' );
                     return(
                         <div key={comment.id}>
                             <div className='media px-3 pt-2'> 
                                 <a href={'/' + userComment.usern} className='no-decoration-a'>
-                                    <img src={'https://source.unsplash.com/random/75x75?sig=' + this.props.user[comment.attributes['user-id']-1].id} alt={userComment.name} className='mr-3 mt-3 rounded-circle' />
+                                    <img src={photo} width='75px' height='75px' className='mr-3 mt-3 rounded-circle' />
                                 </a>
                                 <div className='media-body'>
                                     <h4>
@@ -224,12 +239,16 @@ class Question extends Component{
             const activeThumbDown = (actualUser.thumbs[answer.id] === -1 ? 'opacity': 'clickable');
             const functionThumbDown = (actualUser.thumbs[answer.id] === -1 ? ()=>{}: () => {this.handleClickThumb(answer, -1)});
 
+            console.log(activeThumbUp, functionThumbUp, actualUser.thumbs[answer.id]);
+
             const userAnswer = this.props.user[answer.attributes['user-id']-1].attributes;
+            const photo = CLOUDINARY_PATH + ( userAnswer.ruta ? userAnswer.ruta : 'v1545351717/Ungrupo/User_icon_2.svg.png' );
+
             return(
                 <div key={answer.id}>
                     <div className='media p-3 '> 
                         <a href={ '/' + userAnswer.usern } className='no-decoration-a'>
-                            <img src={'https://source.unsplash.com/random/150x150?sig=' + this.props.user[answer.attributes['user-id']-1].id} alt={userAnswer.name} className='mr-3 mt-3 rounded-circle' />
+                            <img src={photo} width='150px' height='150px' className='mr-3 mt-3 rounded-circle' />
                         </a>
                         <div className='media-body'>
                             <h4>
@@ -241,6 +260,7 @@ class Question extends Component{
 
                             <div className='d-flex justify-content-end'>
                                 <p className='pr-2'>Qualification: {answer.attributes.qualification}</p>
+                                {/*}
                                 <span className='fa-stack fa-mg'>
                                     <i className='fa fa-circle fa-stack-2x' />
                                     <i className={'far fa-thumbs-down fa-stack-1x fa-inverse'} />
@@ -257,6 +277,7 @@ class Question extends Component{
                                     <i className='fa fa-square fa-stack-2x' />
                                     <i className={'far fa-thumbs-up fa-stack-1x fa-inverse'} />
                                 </span>
+                                */}
                                 <span className={'fa-stack fa-mg ' + activeThumbDown} onClick={functionThumbDown}>
                                     <i className='fa fa-circle fa-stack-2x' />
                                     <i className={'fas fa-thumbs-down fa-stack-1x fa-inverse'} />
@@ -265,6 +286,7 @@ class Question extends Component{
                                     <i className='fa fa-circle fa-stack-2x' />
                                     <i className={'fas fa-thumbs-up fa-stack-1x fa-inverse'} />
                                 </span>
+                                {/*
                                 <span className={'fa-stack fa-mg ' + activeThumbDown} onClick={functionThumbDown}>
                                     <i className='fa fa-square fa-stack-2x' />
                                     <i className={'fas fa-thumbs-down fa-stack-1x fa-inverse'} />
@@ -273,6 +295,7 @@ class Question extends Component{
                                     <i className='fa fa-square fa-stack-2x' />
                                     <i className={'fas fa-thumbs-up fa-stack-1x fa-inverse'} />
                                 </span>
+                                */}
                             </div>
 
                             <RichTextEditor handleTextEditorChange={this.handleCommentChange}/>  
@@ -297,7 +320,9 @@ class Question extends Component{
         });
         
         const { question } = this.props;
+        console.log(question);
         let userQuestionId = this.props.question.data.attributes['user-id'];
+        const photo = CLOUDINARY_PATH + ( this.props.user[userQuestionId].attributes.ruta ? this.props.user[userQuestionId].attributes.ruta : 'v1545351717/Ungrupo/User_icon_2.svg.png' );
         
         return(
             <div>
@@ -311,7 +336,7 @@ class Question extends Component{
                         
                         <div className='media p-3 container-form-comment mb-1 mt-1'>
                             <a href={ '/' + this.props.user[userQuestionId].attributes.usern } className='no-decoration-a'>
-                                <img src={'https://source.unsplash.com/random/150x150?sig=' + this.props.user[userQuestionId].id} alt={this.props.user[userQuestionId].attributes.name} className='mr-3 mt-3 rounded-circle' />
+                                <img src={photo} width='150px' height='150px ' className='mr-3 mt-3 rounded-circle' />
                             </a>
                             <div className='media-body'>
                                 <h4>
