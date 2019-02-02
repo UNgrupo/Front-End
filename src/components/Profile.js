@@ -214,13 +214,13 @@ class Profile extends Component {
                 <div className='container'>
                     <div className='row'>
                         <div className='col-12'>
-                            <div className='card p-5 m-5'>
+                            <div className='card p-5 m-5 profile-style'>
                                 <div className='card-body'>
                                     <div className='card-title mb-4'>
                                         <div className='d-flex flex-row'>
                                             <div className='image-container'>
                                                 <img src={photo} alt='profile' id='imgProfile' className='img-thumbnail img-profile' />
-                                                <button className={'btn btn-secondary btn-block' + hide} id='btnChangePicture' onClick={this.uploadWidget}>Update</button>
+                                                <button className={'btn btn-update btn-block' + hide} id='btnChangePicture' onClick={this.uploadWidget}>Update</button>
                                             </div>
                                             <div className='align-self-center ml-5 pl-5'>
                                                 <h1 className='d-block user-profile'>{this.props.user.attributes.usern}</h1>
@@ -247,11 +247,11 @@ class Profile extends Component {
                                                 <div className={'tab-pane fade' + (this.state.activeTab === 'basicInfo-tab' ? ' show active' : '')} id='basicInfo-tab'>
                                                     {attribUser}
                                                     <div className='row d-flex justify-content-between mx-2'>
-                                                        <a href='/my_profile/update'><button className={'btn btn-primary' + hide}>Update Profile</button></a>
+                                                        <a href='/my_profile/update'><button className={'btn btn-update' + hide}>Update Profile</button></a>
                                                         <DeleteItem 
                                                             textModal='Are you sure you want to delete your account?' 
                                                             titleModal={'Delete ' + this.props.user.attributes.usern} 
-                                                            item={<button className={'btn btn-danger ' + hide}>Delete Profile</button>} 
+                                                            item={<button className={'btn btn-delete ' + hide}>Delete Profile</button>} 
                                                             deleteFunction={this.deleteUser} 
                                                         />
                                                     </div>

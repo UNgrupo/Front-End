@@ -3,10 +3,11 @@
     border-radius: 15px;
     border-width: 4px;
     border-style: double;
+    color: #FFF4E0;
 }
 
-.no-decoration-a{
-color: #333;
+.panel .no-decoration-a{
+color: #FFF4E0;
 text-decoration: none;
 }
 
@@ -21,4 +22,8 @@ text-decoration: none;
     height: 40px;
 
     position: relative;
+}
+
+.focus-color{
+    color: #F8B500;
 }

@@ -1,7 +1,7 @@
 .background-footer{
     background: #ADA991;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, rgb(167, 165, 148), rgb(206, 202, 188), rgb(167, 165, 148));  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, rgb(167, 165, 148), rgb(206, 202, 188), rgb(167, 165, 148)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, #FFF4E0); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .text-style-footer{

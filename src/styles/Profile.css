@@ -1,3 +1,16 @@
+.profile-style{
+    
+    background: rgb(67, 71, 77);
+
+
+    border-color: #FFF4E0;
+    border-width: 7px;
+    border-radius: 30px;
+    color: #FFF4E0;
+
+    font-size: 18px;
+}
+
 .no-decoration{
     text-decoration: none;
     color: black;
@@ -12,13 +25,31 @@
     height: 200px;
 
     position: relative;
+    border-color: #393E46;
+    background-color: #393E46;
 }
 
 .user-profile{
     font-family: 'Courier New', Courier, monospace;
     font-size: 60px;
 
-    color: darkslategray;
+    color: FFF4E0;
 
     font-weight: bold;
+}
+
+.btn-delete{
+    background-color: #FC3C3C;
+    border-color: #FC3C3C;
+    border-radius: 10px;
+    font-size: 18px;
+    color: white;
+}
+
+.btn-update{
+    background-color: #F8B500;
+    border-color: #F8B500;
+    border-radius: 10px;
+    font-size: 18px;
+    color: white;
 }
