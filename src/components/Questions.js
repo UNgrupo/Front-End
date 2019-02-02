@@ -123,7 +123,7 @@ class Questions extends Component {
           <div className='margin-questions border-panel mb-3'>
             <div className='panel row px-5 py-5 d-flex justify-content-center'>
               <a href={'/questions/new_question/' + this.props.match.params.topic_id} className='no-decoration-a'>
-                <h3>Common!!! Make a new question</h3>
+                <h3 className='focus-color'>Common!!! Make a new question</h3>
               </a>
               <span className='ml-3'>
                 <a href={'/questions/new_question/' + this.props.match.params.topic_id} className='no-decoration-a'><i className='fas fa-plus-square' /></a>

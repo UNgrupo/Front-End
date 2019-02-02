@@ -304,7 +304,7 @@ class Question extends Component{
                                 { Comment.submitted && this.state.commentError && <div>{this.state.commentError}</div> }
                                 <input type='hidden' id='_answer_id' name='_answer_id' value={answer.id}/>
                                 <div className='mb-3 d-flex justify-content-end'>
-                                    <input type='submit' className='btn btn-success active' value='Submit comment!' />
+                                    <input type='submit' className='btn btnn active' value='Submit comment!' />
                                 </div>
                             </form>
                             <div className='container-form-comment'>
@@ -356,13 +356,13 @@ class Question extends Component{
                         </div>
 
                         <div className='p-4 container-form-comment'>
-                            <label htmlFor='_answer' className='title-question-new-answers'>New answer</label>
+                            <h3 htmlFor='_answer' className='title-question-new-answers mb-4'>New answer</h3>
 
                             <RichTextEditor handleTextEditorChange={this.handleAnswerChange}/>
 
                             <form onSubmit={this.handleSubmitAnswer}>
                                 <div className='d-flex justify-content-end'>
-                                    <input type='submit' className='btn btn-success active' value='Submit Answer!' />
+                                    <input type='submit' className='btn btnn active' value='Submit Answer!' />
                                 </div>
                             </form>
                         </div>

@@ -61,10 +61,6 @@ class Log_in extends Component {
   
   responseFacebook( response ){
     this.props.dispatch( userActions.loginFacebook( response ) ); //revisar como hacer para que solo ingrese cuadno se le pide oprimiendo el boton
-
-    axios.get("https://graph.facebook.com/?access_token={" + response.accessToken + "}")
-    .then(res => {console.log(res)})
-
   }
   
   render() {
@@ -126,7 +122,7 @@ class Log_in extends Component {
                   appId='1978366042223188'
                   fields='name,email,picture'
                   callback={this.responseFacebook}
-                  //onClick={this.responseFacebook}
+                  onClick={this.responseFacebook}
                   cssClass='loginBtn loginBtn--facebook'
                   xfbml={true}
                 />
@@ -154,5 +150,5 @@ export default connect(mapStateToProps)(Log_in);
 //2245067805765444
 //1978366042223188
 //tnzjjgjjve_1540777059@tfbnw.net
-//123456123456
+//123456789123
 //https://www.oauthlogin.com/documentation.html

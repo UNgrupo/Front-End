@@ -16,7 +16,8 @@
     font-family: 'Pacifico', cursive;
     font-size: 120px;
     font-weight: bold;
-    color: rgb(24, 20, 20);
+    /*color: rgb(24, 20, 20);*/
+    color: #FFF4E0;
     text-align: center;
 }
 
@@ -27,13 +28,15 @@
     font-weight: bold;
     color: rgb(24, 20, 20);
     text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .title-question{
     font-family: 'Pacifico', cursive;
     font-size: 70px;
     font-weight: bold;
-    color: rgb(24, 20, 20);
+    color: #FFF4E0;
     text-align: center;
 }
 
@@ -41,15 +44,15 @@
     font-family: 'Pacifico', cursive;
     font-size: 60px;
     font-weight: bold;
-    color: rgb(24, 20, 20);
+    color: #FFF4E0;
     text-align: center;
 }
 
 .title-question-new-answers{
     font-family: 'Pacifico', cursive;
-    font-size: 30px;
+    font-size: 40px;
     font-weight: bold;
-    color: rgb(24, 20, 20);
+    color: #FFF4E0;
     text-align: center;
 }
 
@@ -57,7 +60,7 @@
 .title-proyect{
     font-family: 'Pacifico', cursive;
     font-size: 100px;
-    color: rgb(99, 86, 86);
+    color: #FFF4E0;
     
     text-align: center;
     text-transform: uppercase;
@@ -70,7 +73,7 @@
 .title-home {
     font-family: 'Pacifico', cursive;
     font-size: 140px;
-    color: rgb(99, 86, 86);
+    color: #FFF4E0;
     
     text-align: center;
     text-transform: uppercase;  
@@ -85,7 +88,7 @@
     font-size: 70px;
     font-weight: bold;
 
-    color: rgb(99, 86, 86);
+    color: #FFF4E0;
 
     text-align: center;
     text-rendering: optimizeLegibility;

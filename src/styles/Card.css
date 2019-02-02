@@ -1,5 +1,5 @@
 .card-style{
-    background-color: #3A3333;
+    background-color: rgb(49, 53, 59);
     color: white;
     font-size: 26px;
     text-transform: capitalize;
@@ -10,7 +10,8 @@
 }
 
 .card-style :hover{
-    background-color: rgba(255, 255, 255, 0.295);
+    background-color: #F8B500;
+    color: #FC3C3C; 
 }
 
 .card-style img:hover{
